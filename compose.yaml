@@ -1,0 +1,14 @@
+services:
+#  mongodb:
+#    image: "mongo:7-jammy"
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root # must be changed...
+#      MONGO_INITDB_ROOT_PASSWORD: root # ...
+#    volumes:
+#      - inkedlin_mongodb:/data/db
+  inkout:
+    build:
+      ./inkout/
+
+#volumes:
+#  inkedlin_mongodb:

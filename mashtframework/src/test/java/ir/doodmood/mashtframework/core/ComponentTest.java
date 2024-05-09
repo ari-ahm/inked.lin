@@ -2,6 +2,7 @@ package ir.doodmood.mashtframework.core;
 
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Component;
+import ir.doodmood.mashtframework.exception.CircularDependencyException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -45,6 +46,19 @@ class Jafar {
     }
 }
 
+@Component
+class Circ1 {
+    @Autowired
+    public Circ1(Circ2 c) {}
+}
+
+
+@Component
+class Circ2 {
+    @Autowired
+    public Circ2(Circ1 c) {}
+}
+
 public class ComponentTest {
     @Test
     public void publicNoArgsConstructor() throws Throwable {
@@ -68,5 +82,11 @@ public class ComponentTest {
         ComponentFactory c = new ComponentFactory(Jafar.class, components);
         Jafar j1 = (Jafar)c.getNew();
         Assert.assertEquals(j1.getMul(), 42);
+    }
+
+    @Test(expected = CircularDependencyException.class)
+    public void circularDependencyTest() throws Throwable {
+        HashMap<String, ComponentFactory> components = new HashMap<>();
+        ComponentFactory c = new ComponentFactory(Circ1.class, components);
     }
 }

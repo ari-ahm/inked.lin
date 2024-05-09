@@ -25,6 +25,8 @@ class ComponentFactory {
         if (persistentClass.getAnnotation(ir.doodmood.mashtframework.annotation.Component.class) == null)
             throw new IncorrectAnnotationException(String.format("Class %s does not annotate Component", persistentClass.getName()));
 
+        components.put(persistentClass.getName(), this);
+
         findConstructor();
         if (!circularDependencyCheck())
             throw new CircularDependencyException("There is a circular dependency in your code...");
@@ -86,10 +88,13 @@ class ComponentFactory {
 
     private boolean circularDependencyCheck() {
         circularDependencyCount++;
-        if (circularDependencyCount > 1)
+        if (circularDependencyCount > 1) {
+            circularDependencyCount = 0;
             return false;
+        }
         for (ComponentFactory c : dependencies) {
             if (!c.circularDependencyCheck()) {
+                circularDependencyCount = 0;
                 return false;
             }
         }

@@ -10,7 +10,7 @@ import java.lang.reflect.Parameter;
 import java.util.HashMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-class ComponentFactory {
+public class ComponentFactory {
     private ArrayList<ComponentFactory> dependencies;
     private Constructor constructor;
     private final Class persistentClass;

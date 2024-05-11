@@ -1,0 +1,8 @@
+{
+  "s1": "henlo",
+  "s2": {
+    "username": "John",
+    "password": "Doe"
+  },
+  "s3": 12
+}

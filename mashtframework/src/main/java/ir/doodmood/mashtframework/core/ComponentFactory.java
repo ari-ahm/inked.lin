@@ -10,13 +10,31 @@ import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import ir.doodmood.mashtframework.annotation.*;
 
+interface HasFactoryMethod {
+    Object getNew();
+}
+
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class ComponentFactory {
-    private final ArrayList<ComponentFactory> dependencies;
+public class ComponentFactory implements HasFactoryMethod {
+    private final ArrayList<HasFactoryMethod> dependencies;
     private Constructor constructor;
     private final Class persistentClass;
     private static final HashMap<String, ComponentFactory> components = new HashMap<>();
     private boolean isResolving = false;
+
+    private static class PropertiesComponent implements HasFactoryMethod {
+        private final String key;
+        private final Class persistentClass;
+
+        public PropertiesComponent(String key, Class persistentClass) {
+            this.key = key;
+            this.persistentClass = persistentClass;
+        }
+
+        public Object getNew() {
+            return Config.getInstance().get(key, persistentClass);
+        }
+    }
 
     public ComponentFactory(Class persistentClass) throws IncorrectAnnotationException, CircularDependencyException {
         this.persistentClass = persistentClass;
@@ -72,16 +90,17 @@ public class ComponentFactory {
     private void resolveDependencies() throws IncorrectAnnotationException, CircularDependencyException {
         isResolving = true;
         for (Parameter p : constructor.getParameters()) {
-            if (components.containsKey(p.getType().getName())) {
+            if (p.getAnnotation(Properties.class) != null) {
+                String key = p.getAnnotation(Properties.class).value();
+                Config.getInstance().get(key, p.getType());
+                dependencies.add(new PropertiesComponent(key, p.getType()));
+            } else if (components.containsKey(p.getType().getName())) {
                 dependencies.add(components.get(p.getType().getName()));
                 if (components.get(p.getType().getName()).isResolving)
                     throw new CircularDependencyException();
             } else {
-                // TODO: maybe implement some annotations to inject data
-                //  into constructors? for the unannotated primitive thingy down here.
-
                 if (p.getType().isPrimitive())
-                    throw new IncorrectAnnotationException(String.format("Class %s's Constructor has an unannotated primitive type", persistentClass.getName()));
+                    throw new IncorrectAnnotationException(String.format("Class %s's Constructor has a primitive type", persistentClass.getName()));
                 ComponentFactory c = new ComponentFactory(p.getType());
 
                 dependencies.add(c);

@@ -31,7 +31,7 @@ public class ComponentFactory {
         findConstructor();
     }
 
-    public Object getNew() throws IncorrectAnnotationException {
+    public Object getNew() {
         Object[] dependenciesNewed = new Object[constructor.getParameterCount()];
         for (int i = 0; i < dependencies.size(); i++)
             dependenciesNewed[i] = dependencies.get(i).getNew();

@@ -62,31 +62,27 @@ class Circ2 {
 public class ComponentTest {
     @Test
     public void publicNoArgsConstructor() throws Throwable {
-        HashMap<String, ComponentFactory> components = new HashMap<>();
-        ComponentFactory c = new ComponentFactory(Mammad.class, components);
+        ComponentFactory c = new ComponentFactory(Mammad.class);
         Mammad m1 = (Mammad)c.getNew();
         Assert.assertEquals(m1.getSix(), 6);
     }
 
     @Test
     public void privateNoArgsConstructor() throws Throwable {
-        HashMap<String, ComponentFactory> components = new HashMap<>();
-        ComponentFactory c = new ComponentFactory(Ali.class, components);
+        ComponentFactory c = new ComponentFactory(Ali.class);
         Ali a1 = (Ali)c.getNew();
         Assert.assertEquals(a1.getSeven(), 7);
     }
 
     @Test
     public void publicWithDependencyConstructor() throws Throwable {
-        HashMap<String, ComponentFactory> components = new HashMap<>();
-        ComponentFactory c = new ComponentFactory(Jafar.class, components);
+        ComponentFactory c = new ComponentFactory(Jafar.class);
         Jafar j1 = (Jafar)c.getNew();
         Assert.assertEquals(j1.getMul(), 42);
     }
 
     @Test(expected = CircularDependencyException.class)
     public void circularDependencyTest() throws Throwable {
-        HashMap<String, ComponentFactory> components = new HashMap<>();
-        ComponentFactory c = new ComponentFactory(Circ1.class, components);
+        ComponentFactory c = new ComponentFactory(Circ1.class);
     }
 }

@@ -8,28 +8,27 @@ import java.util.ArrayList;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
+import ir.doodmood.mashtframework.annotation.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ComponentFactory {
-    private ArrayList<ComponentFactory> dependencies;
+    private final ArrayList<ComponentFactory> dependencies;
     private Constructor constructor;
     private final Class persistentClass;
-    private final HashMap<String, ComponentFactory> components;
-    private int circularDependencyCount = 0;
+    private static final HashMap<String, ComponentFactory> components = new HashMap<>();
+    private boolean isResolving = false;
 
-    public ComponentFactory(Class persistentClass, HashMap<String, ComponentFactory> components) throws IncorrectAnnotationException, CircularDependencyException {
+    public ComponentFactory(Class persistentClass) throws IncorrectAnnotationException, CircularDependencyException {
         this.persistentClass = persistentClass;
-        this.components = components;
         dependencies = new ArrayList<>();
+        constructor = null;
 
-        if (persistentClass.getAnnotation(ir.doodmood.mashtframework.annotation.Component.class) == null)
+        if (persistentClass.getAnnotation(Component.class) == null)
             throw new IncorrectAnnotationException(String.format("Class %s does not annotate Component", persistentClass.getName()));
 
         components.put(persistentClass.getName(), this);
 
         findConstructor();
-        if (!circularDependencyCheck())
-            throw new CircularDependencyException("There is a circular dependency in your code...");
     }
 
     public Object getNew() throws IncorrectAnnotationException {
@@ -41,26 +40,29 @@ public class ComponentFactory {
         try {
             return constructor.newInstance(dependenciesNewed);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            // TODO: add logging
             e.printStackTrace();
             return null;
         }
     }
 
     private void findConstructor() throws IncorrectAnnotationException, CircularDependencyException {
-        boolean autoWired = false;
         for (Constructor c : persistentClass.getDeclaredConstructors()) {
-            if (c.getParameterCount() == 0 && !autoWired)
-                constructor = c;
-            if (c.getAnnotation(ir.doodmood.mashtframework.annotation.Autowired.class) == null)
+            if (c.getAnnotation(Autowired.class) == null)
                 continue;
-
-            if (autoWired)
+            if (constructor != null)
                 throw new IncorrectAnnotationException(String.format("Class %s has more than one Autowired Constructor", persistentClass.getName()));
-
-            autoWired = true;
-
             constructor = c;
+        }
+
+        if (constructor != null) {
             resolveDependencies();
+            return;
+        }
+
+        for (Constructor c : persistentClass.getDeclaredConstructors()) {
+            if (c.getParameterCount() == 0)
+                constructor = c;
         }
 
         if (constructor == null)
@@ -68,37 +70,23 @@ public class ComponentFactory {
     }
 
     private void resolveDependencies() throws IncorrectAnnotationException, CircularDependencyException {
-        dependencies.clear();
-
+        isResolving = true;
         for (Parameter p : constructor.getParameters()) {
-            if (components.containsKey(p.getType().getName()))
+            if (components.containsKey(p.getType().getName())) {
                 dependencies.add(components.get(p.getType().getName()));
-            else {
+                if (components.get(p.getType().getName()).isResolving)
+                    throw new CircularDependencyException();
+            } else {
                 // TODO: maybe implement some annotations to inject data
                 //  into constructors? for the unannotated primitive thingy down here.
 
                 if (p.getType().isPrimitive())
                     throw new IncorrectAnnotationException(String.format("Class %s's Constructor has an unannotated primitive type", persistentClass.getName()));
-                ComponentFactory c = new ComponentFactory(p.getType(), components);
+                ComponentFactory c = new ComponentFactory(p.getType());
 
                 dependencies.add(c);
             }
         }
-    }
-
-    private boolean circularDependencyCheck() {
-        circularDependencyCount++;
-        if (circularDependencyCount > 1) {
-            circularDependencyCount = 0;
-            return false;
-        }
-        for (ComponentFactory c : dependencies) {
-            if (!c.circularDependencyCheck()) {
-                circularDependencyCount = 0;
-                return false;
-            }
-        }
-        circularDependencyCount--;
-        return true;
+        isResolving = false;
     }
 }

@@ -62,27 +62,27 @@ class Circ2 {
 public class ComponentTest {
     @Test
     public void publicNoArgsConstructor() throws Throwable {
-        ComponentFactory c = new ComponentFactory(Mammad.class);
+        ComponentFactory c = ComponentFactory.factory(Mammad.class);
         Mammad m1 = (Mammad)c.getNew();
         Assert.assertEquals(m1.getSix(), 6);
     }
 
     @Test
     public void privateNoArgsConstructor() throws Throwable {
-        ComponentFactory c = new ComponentFactory(Ali.class);
+        ComponentFactory c = ComponentFactory.factory(Ali.class);
         Ali a1 = (Ali)c.getNew();
         Assert.assertEquals(a1.getSeven(), 7);
     }
 
     @Test
     public void publicWithDependencyConstructor() throws Throwable {
-        ComponentFactory c = new ComponentFactory(Jafar.class);
+        ComponentFactory c = ComponentFactory.factory(Jafar.class);
         Jafar j1 = (Jafar)c.getNew();
         Assert.assertEquals(j1.getMul(), 42);
     }
 
     @Test(expected = CircularDependencyException.class)
     public void circularDependencyTest() throws Throwable {
-        ComponentFactory c = new ComponentFactory(Circ1.class);
+        ComponentFactory c = ComponentFactory.factory(Circ1.class);
     }
 }

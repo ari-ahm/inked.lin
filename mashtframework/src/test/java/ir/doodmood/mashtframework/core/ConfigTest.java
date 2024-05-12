@@ -61,25 +61,39 @@ class Mamdali3 {
     }
 }
 
+@Component
+class Mamdali4 {
+    public John john;
+    @Autowired
+    public Mamdali4(@Properties("s4") John john) {
+        this.john = john;
+    }
+}
+
 public class ConfigTest {
     @Test
     public void configSimple1Test() throws Exception {
-        ComponentFactory cf = new ComponentFactory(Mamdali.class);
+        ComponentFactory cf = ComponentFactory.factory(Mamdali.class);
         Assert.assertEquals(((Mamdali) cf.getNew()).getS1(), "henlo");
     }
 
     @Test
     public void configSimple2Test() throws Exception {
-        ComponentFactory cf = new ComponentFactory(Mamdali2.class);
+        ComponentFactory cf = ComponentFactory.factory(Mamdali2.class);
         Assert.assertEquals(((Mamdali2) cf.getNew()).getS2().username(), "John");
         Assert.assertEquals(((Mamdali2) cf.getNew()).getS2().password(), "Doe");
     }
 
     @Test
     public void configHard1Test() throws Exception {
-        ComponentFactory cf = new ComponentFactory(Mamdali3.class);
+        ComponentFactory cf = ComponentFactory.factory(Mamdali3.class);
         Assert.assertEquals(((Mamdali3) cf.getNew()).getSun(), "henloJohnDoe12");
     }
 
-
+    @Test
+    public void configNotFoundTest() throws Exception {
+        ComponentFactory cf = ComponentFactory.factory(Mamdali4.class);
+        Mamdali4 mmd = (Mamdali4) cf.getNew();
+        Assert.assertNull(mmd.john);
+    }
 }

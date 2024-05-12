@@ -9,8 +9,8 @@ import java.util.HashMap;
 
 public class Config {
     private static Config config = null;
-    private JsonObject configJson = null;
-    private HashMap<String, HashMap<String, Object>> cache = new HashMap<>();
+    private final JsonObject configJson;
+    private final HashMap<String, HashMap<String, Object>> cache = new HashMap<>();
             // (key, class) -> obj
     private Config() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();

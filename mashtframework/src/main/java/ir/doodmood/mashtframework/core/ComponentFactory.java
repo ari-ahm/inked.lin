@@ -21,7 +21,7 @@ public class ComponentFactory implements HasFactoryMethod {
     private Constructor constructor;
     private static final HashMap<String, ComponentFactory> components = new HashMap<>();
     private boolean isResolving = false;
-//    private static final HashMap<String, Object> singletons = new HashMap<>();
+    private static final HashMap<String, Object> singletons = new HashMap<>();
 
     private static class PropertiesComponent implements HasFactoryMethod {
         private final String key;
@@ -56,8 +56,8 @@ public class ComponentFactory implements HasFactoryMethod {
     }
 
     public Object getNew() {
-//        if (singletons.containsKey(persistentClass.getName()))
-//            return singletons.get(persistentClass.getName());
+        if (singletons.containsKey(persistentClass.getName()))
+            return singletons.get(persistentClass.getName());
 
         Object[] dependenciesNewed = new Object[constructor.getParameterCount()];
         for (int i = 0; i < dependencies.size(); i++)
@@ -118,11 +118,15 @@ public class ComponentFactory implements HasFactoryMethod {
         isResolving = false;
     }
 
-//    public static Object setSingleton(Class singletonClass, boolean set) { // true means it's going to be a singleton
-//        if (singletons.containsKey(singletonClass.getName()) && set)
-//            return singletons.get(singletonClass.getName());
-//        if (!singletons.containsKey(singletonClass.getName()) && !set)
-//            return singletons.get(singletonClass.getName());
-//
-//    }
+    public static Object setSingleton(Class singletonClass, boolean set) throws CircularDependencyException, IncorrectAnnotationException{ // true means it's going to be a singleton
+        if (singletons.containsKey(singletonClass.getName()) && set)
+            return singletons.get(singletonClass.getName());
+
+        if (set)
+            singletons.put(singletonClass.getName(), factory(singletonClass).getNew());
+        else
+            singletons.remove(singletonClass.getName());
+
+        return factory(singletonClass).getNew();
+    }
 }

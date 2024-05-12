@@ -11,7 +11,7 @@ import java.util.HashMap;
 @Component
 class Mammad {
     public Mammad() {
-        System.out.println("hiiii from mammad");
+//        System.out.println("hiiii from mammad");
     }
 
     public int getSix() {
@@ -22,7 +22,7 @@ class Mammad {
 @Component
 class Ali {
     private Ali() {
-        System.out.println("hiiii from ali");
+//        System.out.println("hiiii from ali");
     }
 
     public int getSeven() {
@@ -59,6 +59,17 @@ class Circ2 {
     public Circ2(Circ1 c) {}
 }
 
+@Component
+class Sing {
+    private static int t = 0;
+    public Sing() {
+        t++;
+    }
+    public int getT() {
+        return t;
+    }
+}
+
 public class ComponentTest {
     @Test
     public void publicNoArgsConstructor() throws Throwable {
@@ -84,5 +95,21 @@ public class ComponentTest {
     @Test(expected = CircularDependencyException.class)
     public void circularDependencyTest() throws Throwable {
         ComponentFactory c = ComponentFactory.factory(Circ1.class);
+    }
+
+    @Test
+    public void singletonTest() throws Throwable {
+        ComponentFactory c = ComponentFactory.factory(Sing.class);
+        Sing s1 = (Sing)c.getNew();
+        Assert.assertEquals(s1.getT(), 1);
+        s1 = (Sing)c.getNew();
+        Assert.assertEquals(s1.getT(), 2);
+        ComponentFactory.setSingleton(Sing.class, true);
+        s1 = (Sing)c.getNew();
+        Assert.assertEquals(s1.getT(), 3);
+        s1 = (Sing)c.getNew();
+        Assert.assertEquals(s1.getT(), 3);
+        s1 = (Sing)c.getNew();
+        Assert.assertEquals(s1.getT(), 3);
     }
 }

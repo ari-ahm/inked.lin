@@ -25,7 +25,7 @@ public class ComponentFactory implements HasFactoryMethod {
     private static final HashMap<String, ComponentFactory> components = new HashMap<>();
     private boolean isResolving = false;
     private static final HashMap<String, Object> singletons = new HashMap<>();
-    private static final boolean singleton = false;
+    private final boolean singleton;
 
     private static class PropertiesComponent implements HasFactoryMethod {
         private final String key;
@@ -44,17 +44,19 @@ public class ComponentFactory implements HasFactoryMethod {
     private ComponentFactory(Class persistentClass) throws IncorrectAnnotationException, CircularDependencyException {
         this.persistentClass = persistentClass;
 
-        boolean foundComponents = false;
+        boolean foundComponents = false, tmpSingleton = false;
 
         for (Annotation annotation : persistentClass.getAnnotations()) {
             if (annotation.annotationType().isAnnotationPresent(Component.class)) {
                 foundComponents = true;
-                singleton |= annotation.annotationType().getAnnotation(Component.class).singleton();
+                tmpSingleton |= annotation.annotationType().getAnnotation(Component.class).singleton();
             }
             if (annotation instanceof Component) {
-                singleton |= ((Component) annotation).singleton();
+                tmpSingleton |= ((Component) annotation).singleton();
             }
         }
+
+        this.singleton = tmpSingleton;
 
         if (!foundComponents)
             throw new IncorrectAnnotationException(String.format("Class %s does not annotate Component", persistentClass.getName()));
@@ -139,7 +141,7 @@ public class ComponentFactory implements HasFactoryMethod {
 
     public static Object setSingleton(Class singletonClass, boolean set) throws CircularDependencyException, IncorrectAnnotationException{ // true means it's going to be a singleton
         if ((singletons.containsKey(singletonClass.getName()) && set) ||
-            (singleton && !set))
+            (factory(singletonClass).singleton && !set))
             return singletons.get(singletonClass.getName());
 
         if (set)

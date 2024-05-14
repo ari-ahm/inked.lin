@@ -70,6 +70,17 @@ class Sing {
     }
 }
 
+@Component(singleton = true)
+class Sing2 {
+    private static int t = 0;
+    public Sing2() {
+        t++;
+    }
+    public int getT() {
+        return t;
+    }
+}
+
 public class ComponentTest {
     @Test
     public void publicNoArgsConstructor() throws Throwable {
@@ -111,5 +122,20 @@ public class ComponentTest {
         Assert.assertEquals(s1.getT(), 3);
         s1 = (Sing)c.getNew();
         Assert.assertEquals(s1.getT(), 3);
+    }
+
+    @Test
+    public void singleton2Test() throws Throwable {
+        ComponentFactory c = ComponentFactory.factory(Sing2.class);
+        Sing2 s1 = (Sing2)c.getNew();
+        Assert.assertEquals(s1.getT(), 1);
+        s1 = (Sing2)c.getNew();
+        Assert.assertEquals(s1.getT(), 1);
+        s1 = (Sing2)c.getNew();
+        Assert.assertEquals(s1.getT(), 1);
+        s1 = (Sing2)c.getNew();
+        Assert.assertEquals(s1.getT(), 1);
+        s1 = (Sing2)c.getNew();
+        Assert.assertEquals(s1.getT(), 1);
     }
 }

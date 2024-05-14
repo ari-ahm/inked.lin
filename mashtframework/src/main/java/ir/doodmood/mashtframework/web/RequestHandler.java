@@ -2,45 +2,42 @@ package ir.doodmood.mashtframework.web;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpsExchange;
-import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Component;
-import ir.doodmood.mashtframework.annotation.http.*;
+import ir.doodmood.mashtframework.annotation.http.RestController;
+import ir.doodmood.mashtframework.core.ComponentFactory;
+import ir.doodmood.mashtframework.exception.CircularDependencyException;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
+import ir.doodmood.mashtframework.exception.IncorrectAnnotationException;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 @Component
+@NoArgsConstructor
 class RequestHandler implements HttpHandler {
-    private final Class[] endpointAnnotations = {
-            GetMapping.class,
-            PostMapping.class,
-            PutMapping.class,
-            DeleteMapping.class,
-            PatchMapping.class
-    };
-
     private final HashMap<String, Method> methods = new HashMap<>();
     private final HashMap<String, RequestHandler> routes = new HashMap<>();
-    private final ControllerContainer controllerContainer;
-
-    @Autowired
-    private RequestHandler(ControllerContainer controllerContainer) {
-        this.controllerContainer = controllerContainer;
-    }
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        MashtDTO context = new MashtDTO((HttpsExchange) httpExchange);
-        runPath(context, context.getLinkList());
+        MashtDTO context = new MashtDTO(httpExchange);
+
+        // TODO: handle HEAD and other stuff...
+
+        try {
+            runPath(context, context.getLinkList());
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO: cleeeeeeeeeeeeeaaaaaaaaaaaannnnnnnnnnnnnnnn.
+        }
     }
 
     public void addPath(LinkedList<String> path, Method endpoint) throws DuplicatePathAndMethodException {
         if (path == null || path.isEmpty()) {
-            for (Class i : endpointAnnotations) {
+            for (Class i : RestController.endpointAnnotations) {
                 if (!endpoint.isAnnotationPresent(i)) continue;
 
                 if (methods.containsKey(i.getName()))
@@ -53,23 +50,30 @@ class RequestHandler implements HttpHandler {
         }
 
         if (routes.containsKey(path.getFirst())) {
+            String first = path.getFirst();
             path.removeFirst();
-            routes.get(path.getFirst()).addPath(path, endpoint);
+            routes.get(first).addPath(path, endpoint);
         } else {
-            RequestHandler newPath = new RequestHandler(controllerContainer);
+            RequestHandler newPath = new RequestHandler();
             routes.put(path.getFirst(), newPath);
             path.removeFirst();
             newPath.addPath(path, endpoint);
         }
     }
 
-    public boolean runPath(MashtDTO dto, LinkedList<String> path) {
+    public boolean runPath(MashtDTO dto, LinkedList<String> path)
+            throws CircularDependencyException,
+            IncorrectAnnotationException,
+            IllegalAccessException,
+            InvocationTargetException,
+            IOException {
         if (path == null || path.isEmpty()) {
             if (!methods.containsKey(dto.getRequestType().getName()))
                 return false;
 
+            methods.get(dto.getRequestType().getName()).setAccessible(true);
             methods.get(dto.getRequestType().getName()).invoke(
-                    ControllerContainer.getObject(methods.get(dto.getRequestType().getName()).getDeclaringClass()),
+                    ComponentFactory.factory(methods.get(dto.getRequestType().getName()).getDeclaringClass()).getNew(),
                     dto);
             return true;
         }

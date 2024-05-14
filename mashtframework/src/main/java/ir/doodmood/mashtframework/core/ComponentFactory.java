@@ -3,12 +3,15 @@ package ir.doodmood.mashtframework.core;
 import ir.doodmood.mashtframework.exception.CircularDependencyException;
 import ir.doodmood.mashtframework.exception.IncorrectAnnotationException;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import ir.doodmood.mashtframework.annotation.*;
+
+// TODO: handle CircularDependencyException and IncorrectAnnotationException in HERE!!!!! it's getting dirty
 
 interface HasFactoryMethod {
     Object getNew();
@@ -40,7 +43,13 @@ public class ComponentFactory implements HasFactoryMethod {
     private ComponentFactory(Class persistentClass) throws IncorrectAnnotationException, CircularDependencyException {
         this.persistentClass = persistentClass;
 
-        if (persistentClass.getAnnotation(Component.class) == null)
+        boolean foundComponents = false;
+
+        for (Annotation annotation : persistentClass.getAnnotations())
+            if (annotation.annotationType().isAnnotationPresent(Component.class))
+                foundComponents = true;
+
+        if (!foundComponents)
             throw new IncorrectAnnotationException(String.format("Class %s does not annotate Component", persistentClass.getName()));
 
         components.put(persistentClass.getName(), this);

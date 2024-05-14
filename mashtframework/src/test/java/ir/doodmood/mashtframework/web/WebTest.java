@@ -56,7 +56,7 @@ public class WebTest {
 
         }
 
-        HttpUriRequest req = new HttpGet("http://localhost:8080/ali/javad");
+        HttpUriRequest req = new HttpGet("http://localhost:8080/ali/javad?id=7");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
@@ -86,12 +86,10 @@ public class WebTest {
 
         }
 
-        HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1/tamano");
+        HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1/tamano?id=tir");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
         Assert.assertEquals("21234a5tamano", new String(res.getEntity().getContent().readAllBytes()));
     }
-
-
 }

@@ -9,10 +9,8 @@ import ir.doodmood.mashtframework.exception.CriticalError;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.InetSocketAddress;
 
-// TODO: VERY IMPORTANT: Handle IOException...
 // TODO: handle https
 
 @Component

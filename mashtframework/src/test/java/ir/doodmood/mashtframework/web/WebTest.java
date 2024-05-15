@@ -142,7 +142,6 @@ public class WebTest {
         try {
             MashtApplication.run(WebTest.class);
         } catch (Exception e) {
-
         }
 
         HttpUriRequest req = new HttpPost("http://localhost:8080/javad/mammad");

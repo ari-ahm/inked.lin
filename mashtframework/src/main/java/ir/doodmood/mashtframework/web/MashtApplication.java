@@ -8,11 +8,15 @@ import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,30 +40,41 @@ public class MashtApplication {
         ComponentFactory srvFactory = ComponentFactory.factory(Server.class);
         server = (Server)srvFactory.getNew();
         this.requestHandler = server.getRequestHandler();
-        Set<Class> packageClasses = findAllClassesInPackage(mainClass.getPackage().getName());
+        Set<Class> packageClasses = findAllClassesInPackage(mainClass.getPackage().getName(), getResource(mainClass.getPackage().getName().replace(".", "/")));
         resolveEndpoints(packageClasses);
         server.run();
     }
 
-    private Set<Class> findAllClassesInPackage(String packageName) {
-        InputStream stream = ClassLoader.getSystemClassLoader()
-                .getResourceAsStream(packageName.replaceAll("[.]", "/"));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        return reader.lines()
-                .filter(line -> line.endsWith(".class"))
-                .map(line -> getClass(line, packageName))
-                .collect(Collectors.toSet());
-    }
-
-    private Class getClass(String className, String packageName) {
+    private File getResource(String path) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL resource = classLoader.getResource(path);
         try {
-            return Class.forName(packageName + "."
-                    + className.substring(0, className.lastIndexOf('.')));
-        } catch (ClassNotFoundException e) {
+            return new File(resource.toURI());
+        } catch (URISyntaxException e) {
             Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
             logger.error("Impossible error? ", e);
-            return MashtApplication.class;
+            return null;
         }
+    }
+
+    private Set<Class> findAllClassesInPackage(String packageName, File dir) {
+        Set<Class> ret = new HashSet<>();
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory()) {
+                ret.addAll(findAllClassesInPackage(packageName + "." + file.getName(), file));
+                continue;
+            }
+            if (file.getName().endsWith(".class")) {
+                try {
+                    ret.add(Class.forName(packageName + "." + file.getName().substring(0, file.getName().lastIndexOf("."))));
+                } catch (ClassNotFoundException e) {
+                    Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
+                    logger.error("Impossible error? ", e);
+                }
+            }
+        }
+
+        return ret;
     }
 
     private void resolveEndpoints(Set<Class> packageClasses)

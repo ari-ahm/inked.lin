@@ -1,6 +1,7 @@
 package ir.doodmood.mashtframework.core;
 
 import ir.doodmood.mashtframework.exception.CircularDependencyException;
+import ir.doodmood.mashtframework.exception.CriticalError;
 import ir.doodmood.mashtframework.exception.IncorrectAnnotationException;
 
 import java.lang.annotation.Annotation;
@@ -79,7 +80,7 @@ public class ComponentFactory implements HasFactoryMethod {
                     persistentClass.getName(),
                     " due to ", e.getClass().getSimpleName(), " : ",
                     e.getMessage());
-            return null;
+            throw new CriticalError();
         }
     }
 
@@ -95,9 +96,12 @@ public class ComponentFactory implements HasFactoryMethod {
         try {
             return constructor.newInstance(dependenciesNewed);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            // TODO: add logging
-            e.printStackTrace();
-            return null;
+            Logger logger = (Logger) factory(Logger.class).getNew();
+            logger.critical("Could not make a ComponentFactory for class ",
+                    persistentClass.getName(),
+                    " due to ", e.getClass().getSimpleName(), " : ",
+                    e.getMessage());
+            throw new CriticalError();
         }
     }
 
@@ -146,7 +150,7 @@ public class ComponentFactory implements HasFactoryMethod {
         isResolving = false;
     }
 
-    public static Object setSingleton(Class singletonClass, boolean set) throws CircularDependencyException, IncorrectAnnotationException { // true means it's going to be a singleton
+    public static Object setSingleton(Class singletonClass, boolean set) { // true means it's going to be a singleton
         if ((singletons.containsKey(singletonClass.getName()) && set) ||
             (factory(singletonClass).singleton && !set))
             return singletons.get(singletonClass.getName());

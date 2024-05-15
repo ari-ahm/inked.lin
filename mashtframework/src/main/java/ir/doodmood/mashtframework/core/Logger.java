@@ -9,5 +9,5 @@ public class Logger {
     public void info(Object... message);
     public void warning(Object... message);
     public void error(Object... message);
-    public void critical(Object... message) throws CriticalError;
+    public void critical(Object... message);
 }

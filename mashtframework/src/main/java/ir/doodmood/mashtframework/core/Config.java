@@ -14,13 +14,13 @@ public class Config {
     private final JsonObject configJson;
     private final HashMap<String, HashMap<String, Object>> cache = new HashMap<>();
             // (key, class) -> obj
-    private Config() {
+    private Config(Logger logger) {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream is = classloader.getResourceAsStream("properties.json");
 
         if (is == null) {
             configJson = new JsonObject();
-            // log
+            logger.warning("Properties file not found");
         }
         else configJson = JsonParser.parseReader(new InputStreamReader(is)).getAsJsonObject();
     }

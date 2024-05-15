@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import ir.doodmood.mashtframework.annotation.Component;
 import ir.doodmood.mashtframework.annotation.http.RestController;
 import ir.doodmood.mashtframework.core.ComponentFactory;
+import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.CircularDependencyException;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
 import ir.doodmood.mashtframework.exception.IncorrectAnnotationException;
@@ -28,17 +29,15 @@ class RequestHandler implements HttpHandler {
 
         // TODO: handle HEAD and other stuff...
 
-        try {
-            runPath(context, context.getLinkList());
-        } catch (Exception e) {
-            e.printStackTrace(); // TODO: cleeeeeeeeeeeeeaaaaaaaaaaaannnnnnnnnnnnnnnn.
-        }
+        runPath(context, context.getLinkList());
     }
 
-    public void addPath(LinkedList<String> path, Method endpoint) throws DuplicatePathAndMethodException {
+    void addPath(LinkedList<String> path, Method endpoint) throws DuplicatePathAndMethodException {
         if (path == null || path.isEmpty()) {
             for (Class i : RestController.endpointAnnotations) {
-                if (!endpoint.isAnnotationPresent(i)) continue;
+                if (!endpoint.isAnnotationPresent(i)) continue; // TODO: bug here
+
+                endpoint.setAccessible(true);
 
                 if (methods.containsKey(i.getName()))
                     throw new DuplicatePathAndMethodException(String.format("In method : %s", endpoint.getName()));
@@ -62,19 +61,19 @@ class RequestHandler implements HttpHandler {
     }
 
     public boolean runPath(MashtDTO dto, LinkedList<String> path)
-            throws CircularDependencyException,
-            IncorrectAnnotationException,
-            IllegalAccessException,
-            InvocationTargetException,
-            IOException {
+            throws IOException {
         if (path == null || path.isEmpty()) {
             if (!methods.containsKey(dto.getRequestType().getName()))
                 return false;
 
-            methods.get(dto.getRequestType().getName()).setAccessible(true);
-            methods.get(dto.getRequestType().getName()).invoke(
-                    ComponentFactory.factory(methods.get(dto.getRequestType().getName()).getDeclaringClass()).getNew(),
-                    dto);
+            try {
+                methods.get(dto.getRequestType().getName()).invoke(
+                        ComponentFactory.factory(methods.get(dto.getRequestType().getName()).getDeclaringClass()).getNew(),
+                        dto);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
+                logger.error("Impossible error happened here. ", e.getMessage());
+            }
             return true;
         }
 

@@ -3,6 +3,7 @@ package ir.doodmood.mashtframework.core;
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Component;
 import ir.doodmood.mashtframework.exception.CircularDependencyException;
+import ir.doodmood.mashtframework.exception.CriticalError;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -103,7 +104,7 @@ public class ComponentTest {
         Assert.assertEquals(j1.getMul(), 42);
     }
 
-    @Test(expected = CircularDependencyException.class)
+    @Test(expected = CriticalError.class)
     public void circularDependencyTest() throws Throwable {
         ComponentFactory c = ComponentFactory.factory(Circ1.class);
     }

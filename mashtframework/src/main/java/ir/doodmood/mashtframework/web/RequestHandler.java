@@ -5,12 +5,14 @@ import com.sun.net.httpserver.HttpHandler;
 import ir.doodmood.mashtframework.annotation.Component;
 import ir.doodmood.mashtframework.annotation.http.RestController;
 import ir.doodmood.mashtframework.core.ComponentFactory;
+import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.CircularDependencyException;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
 import ir.doodmood.mashtframework.exception.IncorrectAnnotationException;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -28,23 +30,18 @@ class RequestHandler implements HttpHandler {
 
         // TODO: handle HEAD and other stuff...
 
-        try {
-            runPath(context, context.getLinkList());
-        } catch (Exception e) {
-            e.printStackTrace(); // TODO: cleeeeeeeeeeeeeaaaaaaaaaaaannnnnnnnnnnnnnnn.
-        }
+        runPath(context, context.getLinkList());
     }
 
-    public void addPath(LinkedList<String> path, Method endpoint) throws DuplicatePathAndMethodException {
+    void addPath(LinkedList<String> path, Method endpoint, Class method) throws DuplicatePathAndMethodException {
         if (path == null || path.isEmpty()) {
-            for (Class i : RestController.endpointAnnotations) {
-                if (!endpoint.isAnnotationPresent(i)) continue;
 
-                if (methods.containsKey(i.getName()))
-                    throw new DuplicatePathAndMethodException(String.format("In method : %s", endpoint.getName()));
+            endpoint.setAccessible(true);
 
-                methods.put(i.getName(), endpoint);
-            }
+            if (methods.containsKey(method.getName()))
+                throw new DuplicatePathAndMethodException(String.format("In method : %s", endpoint.getName()));
+
+            methods.put(method.getName(), endpoint);
 
             return;
         }
@@ -52,29 +49,29 @@ class RequestHandler implements HttpHandler {
         if (routes.containsKey(path.getFirst())) {
             String first = path.getFirst();
             path.removeFirst();
-            routes.get(first).addPath(path, endpoint);
+            routes.get(first).addPath(path, endpoint, method);
         } else {
             RequestHandler newPath = new RequestHandler();
             routes.put(path.getFirst(), newPath);
             path.removeFirst();
-            newPath.addPath(path, endpoint);
+            newPath.addPath(path, endpoint, method);
         }
     }
 
     public boolean runPath(MashtDTO dto, LinkedList<String> path)
-            throws CircularDependencyException,
-            IncorrectAnnotationException,
-            IllegalAccessException,
-            InvocationTargetException,
-            IOException {
+            throws IOException {
         if (path == null || path.isEmpty()) {
             if (!methods.containsKey(dto.getRequestType().getName()))
                 return false;
 
-            methods.get(dto.getRequestType().getName()).setAccessible(true);
-            methods.get(dto.getRequestType().getName()).invoke(
-                    ComponentFactory.factory(methods.get(dto.getRequestType().getName()).getDeclaringClass()).getNew(),
-                    dto);
+            try {
+                methods.get(dto.getRequestType().getName()).invoke(
+                        ComponentFactory.factory(methods.get(dto.getRequestType().getName()).getDeclaringClass()).getNew(),
+                        dto);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
+                logger.error("Impossible error happened here. ", e.getMessage());
+            }
             return true;
         }
 

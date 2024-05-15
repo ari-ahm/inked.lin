@@ -1,6 +1,7 @@
 package ir.doodmood.mashtframework.core;
 
 import ir.doodmood.mashtframework.annotation.Component;
+import ir.doodmood.mashtframework.exception.CriticalError;
 
 import javax.swing.text.DateFormatter;
 import java.awt.*;
@@ -11,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 @Component(singleton = true)
 public class Logger {
+<<<<<<< HEAD
 
     enum Levels {
         INFO("Info", Colors.LIME_BLUE),
@@ -95,4 +97,11 @@ public class Logger {
     public void critical(String... messages) {
         System.out.println(logFormatter(Levels.CRITICAL, generateMessage(messages)));
     }
+=======
+    public void debug(Object... message);
+    public void info(Object... message);
+    public void warning(Object... message);
+    public void error(Object... message);
+    public void critical(Object... message);
+>>>>>>> 82885d7c4ad863c6a9e47aa8b6b83507d36964ab
 }

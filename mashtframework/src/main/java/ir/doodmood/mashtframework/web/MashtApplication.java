@@ -3,38 +3,27 @@ package ir.doodmood.mashtframework.web;
 import ir.doodmood.mashtframework.annotation.http.RestController;
 import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Config;
-import ir.doodmood.mashtframework.exception.CircularDependencyException;
+import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
-import ir.doodmood.mashtframework.exception.IncorrectAnnotationException;
 
-import javax.lang.model.element.AnnotationValue;
 import javax.management.InstanceAlreadyExistsException;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.lang.reflect.Parameter;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// TODO: deal with the exceptions...
-
 public class MashtApplication {
     private final Server server;
     private final RequestHandler requestHandler;
-    private final Class mainClass;
     private static boolean isAlreadyUp;
 
     public static MashtApplication run(Class mainClass)
-            throws IncorrectAnnotationException,
-            CircularDependencyException,
-            DuplicatePathAndMethodException,
-            IOException,
+            throws DuplicatePathAndMethodException,
             InstanceAlreadyExistsException {
         if (isAlreadyUp)
             throw new InstanceAlreadyExistsException("an instance of MashtApplication is already up.");
@@ -43,13 +32,9 @@ public class MashtApplication {
     }
 
     private MashtApplication(Class mainClass)
-            throws IncorrectAnnotationException,
-            CircularDependencyException,
-            DuplicatePathAndMethodException,
-            IOException {
+            throws DuplicatePathAndMethodException {
         ComponentFactory srvFactory = ComponentFactory.factory(Server.class);
         server = (Server)srvFactory.getNew();
-        this.mainClass = mainClass;
         this.requestHandler = server.getRequestHandler();
         Set<Class> packageClasses = findAllClassesInPackage(mainClass.getPackage().getName());
         resolveEndpoints(packageClasses);
@@ -71,17 +56,16 @@ public class MashtApplication {
             return Class.forName(packageName + "."
                     + className.substring(0, className.lastIndexOf('.')));
         } catch (ClassNotFoundException e) {
-            // TODO: handle the exception. is it even possible??
+            Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
+            logger.error("Impossible error? ", e);
+            return MashtApplication.class;
         }
-        return null;
     }
 
     private void resolveEndpoints(Set<Class> packageClasses)
-            throws DuplicatePathAndMethodException,
-            CircularDependencyException,
-            IncorrectAnnotationException {
-        Boolean singletonControllers = (Boolean) Config.getInstance().get(
-                "singleton_controllers", Boolean.class);
+            throws DuplicatePathAndMethodException {
+        Boolean singletonControllers = (Boolean) ((Config) ComponentFactory.factory(Config.class).getNew())
+                .get("singleton_controllers", Boolean.class);
         if (singletonControllers == null) singletonControllers = true;
 
         for (Class clazz : packageClasses) {
@@ -98,7 +82,12 @@ public class MashtApplication {
                 for (Class i : RestController.endpointAnnotations) {
                     if (!m.isAnnotationPresent(i)) continue;
 
-                    // TODO: check function signature
+                    Parameter[] parameters = m.getParameters();
+                    if (parameters.length != 1 || !parameters[0].getType().equals(MashtDTO.class)) {
+                        Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
+                        logger.error("Method ", m.getName(), " doesn't have the required signature: void func(MashtDTO). skipping");
+                        continue;
+                    }
 
                     LinkedList<String> subPath = new LinkedList<>(path);
 
@@ -106,8 +95,8 @@ public class MashtApplication {
                     try {
                         annotationValue = (String) i.getMethod("value").invoke(m.getAnnotation(i));
                     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                        // TODO: fix this up.....
-                        e.printStackTrace();
+                        Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
+                        logger.error("Impossible error? ", e);
                     }
 
 
@@ -115,7 +104,7 @@ public class MashtApplication {
                         if (!j.isEmpty() && !j.isBlank()) subPath.add(j);
                     }
 
-                    requestHandler.addPath(subPath, m);
+                    requestHandler.addPath(subPath, m, i);
                 }
             }
         }

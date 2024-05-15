@@ -11,8 +11,6 @@ import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import ir.doodmood.mashtframework.annotation.*;
 
-// TODO: handle CircularDependencyException and IncorrectAnnotationException in HERE!!!!! it's getting dirty
-
 interface HasFactoryMethod {
     Object getNew();
 }
@@ -37,7 +35,7 @@ public class ComponentFactory implements HasFactoryMethod {
         }
 
         public Object getNew() {
-            return Config.getInstance().get(key, persistentClass);
+            return ((Config) factory(Config.class).getNew()).get(key, persistentClass);
         }
     }
 
@@ -69,11 +67,20 @@ public class ComponentFactory implements HasFactoryMethod {
             setSingleton(persistentClass, true);
     }
 
-    public static ComponentFactory factory(Class persistentClass) throws IncorrectAnnotationException, CircularDependencyException {
+    public static ComponentFactory factory(Class persistentClass) {
         if (components.containsKey(persistentClass.getName()))
             return components.get(persistentClass.getName());
 
-        return new ComponentFactory(persistentClass);
+        try {
+            return new ComponentFactory(persistentClass);
+        } catch(CircularDependencyException | IncorrectAnnotationException e) {
+            Logger logger = (Logger) factory(Logger.class).getNew();
+            logger.critical("Could not make a ComponentFactory for class ",
+                    persistentClass.getName(),
+                    " due to ", e.getClass().getSimpleName(), " : ",
+                    e.getMessage());
+            return null;
+        }
     }
 
     public Object getNew() {
@@ -124,7 +131,7 @@ public class ComponentFactory implements HasFactoryMethod {
                 throw new IncorrectAnnotationException(String.format("Class %s's Constructor has a primitive type", persistentClass.getName()));
             if (p.getAnnotation(Properties.class) != null) {
                 String key = p.getAnnotation(Properties.class).value();
-                Config.getInstance().get(key, p.getType());
+                ((Config)factory(Config.class).getNew()).get(key, p.getType());
                 dependencies.add(new PropertiesComponent(key, p.getType()));
             } else if (components.containsKey(p.getType().getName())) {
                 dependencies.add(components.get(p.getType().getName()));
@@ -139,7 +146,7 @@ public class ComponentFactory implements HasFactoryMethod {
         isResolving = false;
     }
 
-    public static Object setSingleton(Class singletonClass, boolean set) throws CircularDependencyException, IncorrectAnnotationException{ // true means it's going to be a singleton
+    public static Object setSingleton(Class singletonClass, boolean set) throws CircularDependencyException, IncorrectAnnotationException { // true means it's going to be a singleton
         if ((singletons.containsKey(singletonClass.getName()) && set) ||
             (factory(singletonClass).singleton && !set))
             return singletons.get(singletonClass.getName());

@@ -80,8 +80,8 @@ public class MashtApplication {
             throws DuplicatePathAndMethodException,
             CircularDependencyException,
             IncorrectAnnotationException {
-        Boolean singletonControllers = (Boolean) Config.getInstance().get(
-                "singleton_controllers", Boolean.class);
+        Boolean singletonControllers = (Boolean) ((Config) ComponentFactory.factory(Config.class).getNew())
+                .get("singleton_controllers", Boolean.class);
         if (singletonControllers == null) singletonControllers = true;
 
         for (Class clazz : packageClasses) {

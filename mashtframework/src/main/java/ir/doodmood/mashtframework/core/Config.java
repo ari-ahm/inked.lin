@@ -3,12 +3,14 @@ package ir.doodmood.mashtframework.core;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import ir.doodmood.mashtframework.annotation.Component;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+@Component(singleton = true)
 public class Config {
-    private static Config config = null;
     private final JsonObject configJson;
     private final HashMap<String, HashMap<String, Object>> cache = new HashMap<>();
             // (key, class) -> obj
@@ -16,14 +18,11 @@ public class Config {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream is = classloader.getResourceAsStream("properties.json");
 
-        if (is == null) configJson = new JsonObject();
+        if (is == null) {
+            configJson = new JsonObject();
+            // log
+        }
         else configJson = JsonParser.parseReader(new InputStreamReader(is)).getAsJsonObject();
-    }
-
-    public static Config getInstance() {
-        if (config == null)
-            config = new Config();
-        return config;
     }
 
     public Object get(String key, Class gClass) {

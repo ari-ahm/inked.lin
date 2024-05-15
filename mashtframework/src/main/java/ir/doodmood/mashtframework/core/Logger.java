@@ -1,12 +1,7 @@
 package ir.doodmood.mashtframework.core;
 
 import ir.doodmood.mashtframework.annotation.Component;
-import ir.doodmood.mashtframework.exception.CriticalError;
 
-import javax.swing.text.DateFormatter;
-import java.awt.*;
-import java.awt.color.ColorSpace;
-import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -71,7 +66,7 @@ public class Logger {
         return String.format("%s [%s]: %s", getTime(), setColor(level.getColor(), level.getText()), setColor(level.getColor(), message));
     }
 
-    private String generateMessage(String... messages) {
+    private String generateMessage(Object... messages) {
         String message = "";
         for (int i = 0; i < messages.length; i++) {
             message = message + " " + messages[i];
@@ -80,19 +75,19 @@ public class Logger {
         return message;
     }
 
-    public void debug(String... messages) {
+    public void debug(Object... messages) {
         System.out.println(logFormatter(Levels.DEBUG, generateMessage(messages)));
     }
-    public void info(String... messages){
+    public void info(Object... messages){
         System.out.println(logFormatter(Levels.INFO, generateMessage(messages)));
     }
-    public void warning(String... messages) {
+    public void warning(Object... messages) {
         System.out.println(logFormatter(Levels.WARNING, generateMessage(messages)));
     }
-    public void error(String... messages) {
+    public void error(Object... messages) {
         System.out.println(logFormatter(Levels.ERROR, generateMessage(messages)));
     }
-    public void critical(String... messages) {
+    public void critical(Object... messages) {
         System.out.println(logFormatter(Levels.CRITICAL, generateMessage(messages)));
     }
 }

@@ -12,6 +12,7 @@ import ir.doodmood.mashtframework.exception.IncorrectAnnotationException;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -32,18 +33,15 @@ class RequestHandler implements HttpHandler {
         runPath(context, context.getLinkList());
     }
 
-    void addPath(LinkedList<String> path, Method endpoint) throws DuplicatePathAndMethodException {
+    void addPath(LinkedList<String> path, Method endpoint, Class method) throws DuplicatePathAndMethodException {
         if (path == null || path.isEmpty()) {
-            for (Class i : RestController.endpointAnnotations) {
-                if (!endpoint.isAnnotationPresent(i)) continue; // TODO: bug here
 
-                endpoint.setAccessible(true);
+            endpoint.setAccessible(true);
 
-                if (methods.containsKey(i.getName()))
-                    throw new DuplicatePathAndMethodException(String.format("In method : %s", endpoint.getName()));
+            if (methods.containsKey(method.getName()))
+                throw new DuplicatePathAndMethodException(String.format("In method : %s", endpoint.getName()));
 
-                methods.put(i.getName(), endpoint);
-            }
+            methods.put(method.getName(), endpoint);
 
             return;
         }
@@ -51,12 +49,12 @@ class RequestHandler implements HttpHandler {
         if (routes.containsKey(path.getFirst())) {
             String first = path.getFirst();
             path.removeFirst();
-            routes.get(first).addPath(path, endpoint);
+            routes.get(first).addPath(path, endpoint, method);
         } else {
             RequestHandler newPath = new RequestHandler();
             routes.put(path.getFirst(), newPath);
             path.removeFirst();
-            newPath.addPath(path, endpoint);
+            newPath.addPath(path, endpoint, method);
         }
     }
 

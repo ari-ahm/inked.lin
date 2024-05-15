@@ -104,7 +104,7 @@ public class MashtApplication {
                         if (!j.isEmpty() && !j.isBlank()) subPath.add(j);
                     }
 
-                    requestHandler.addPath(subPath, m);
+                    requestHandler.addPath(subPath, m, i);
                 }
             }
         }

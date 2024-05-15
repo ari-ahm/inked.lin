@@ -4,6 +4,7 @@ import ir.doodmood.mashtframework.annotation.http.GetMapping;
 import ir.doodmood.mashtframework.annotation.http.RestController;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Assert;
@@ -91,5 +92,63 @@ public class WebTest {
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
         Assert.assertEquals("21234a5tamano", new String(res.getEntity().getContent().readAllBytes()));
+    }
+
+    @Test
+    public void subPackageTest() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+
+        }
+
+        HttpUriRequest req = new HttpGet("http://localhost:8080/javad/ali");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assert.assertEquals("salamAzMa", new String(res.getEntity().getContent().readAllBytes()));
+    }
+
+    @Test
+    public void _404Test() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+
+        }
+
+        HttpUriRequest req = new HttpGet("http://localhost:8080/javad/mammad");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void _404Tes2t() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+
+        }
+
+        HttpUriRequest req = new HttpPost("http://localhost:8080/javad/ali");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void postTest() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+
+        }
+
+        HttpUriRequest req = new HttpPost("http://localhost:8080/javad/mammad");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assert.assertEquals("salamAzMa", new String(res.getEntity().getContent().readAllBytes()));
     }
 }

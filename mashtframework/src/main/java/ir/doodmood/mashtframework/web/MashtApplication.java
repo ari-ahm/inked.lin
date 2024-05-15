@@ -7,10 +7,7 @@ import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -19,7 +16,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class MashtApplication {
     private final Server server;

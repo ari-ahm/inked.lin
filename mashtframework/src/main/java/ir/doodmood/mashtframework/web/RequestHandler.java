@@ -3,16 +3,12 @@ package ir.doodmood.mashtframework.web;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ir.doodmood.mashtframework.annotation.Component;
-import ir.doodmood.mashtframework.annotation.http.RestController;
 import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Logger;
-import ir.doodmood.mashtframework.exception.CircularDependencyException;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
-import ir.doodmood.mashtframework.exception.IncorrectAnnotationException;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;

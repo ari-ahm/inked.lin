@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class MashtDTO {
     private final HttpExchange httpExchange;
@@ -68,5 +69,13 @@ public class MashtDTO {
         os.write(ret);
         os.close();
         httpExchange.close();
+    }
+
+    public void setHttpResponseHeader(String key, String value) {
+        httpExchange.getResponseHeaders().add(key, value);
+    }
+
+    public List<String> getHttpRequestHeader(String key) {
+        return httpExchange.getResponseHeaders().get(key);
     }
 }

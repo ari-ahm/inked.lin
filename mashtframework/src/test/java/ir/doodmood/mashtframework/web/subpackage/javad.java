@@ -13,10 +13,6 @@ public class javad {
     @GetMapping("/ali")
     @PostMapping("/mammad")
     public void amir(MashtDTO dt) throws IOException {
-        byte[] s = "salamAzMa".getBytes();
-        dt.getHttpExchange().sendResponseHeaders(200, s.length);
-        OutputStream st = dt.getHttpExchange().getResponseBody();
-        st.write(s);
-        st.close();
+        dt.sendResponse(200, "salamAzMa");
     }
 }

@@ -87,7 +87,7 @@ class RequestHandler implements HttpHandler {
             dto.popPathVariable();
         }
 
-        dto.send404();
+        dto.sendResponse(404, "Not Found");
         return false;
     }
 }

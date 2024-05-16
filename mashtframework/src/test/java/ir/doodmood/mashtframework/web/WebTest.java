@@ -16,20 +16,12 @@ import java.io.OutputStream;
 class MammadController {
     @GetMapping("javad/")
     void jafar(MashtDTO dt) throws Exception {
-        byte[] s = "salam".getBytes();
-        dt.getHttpExchange().sendResponseHeaders(200, s.length);
-        OutputStream st = dt.getHttpExchange().getResponseBody();
-        st.write(s);
-        st.close();
+        dt.sendResponse(200, "salam");
     }
 
     @GetMapping
     void jafar2(MashtDTO dt) throws Exception {
-        byte[] s = "khodafez".getBytes();
-        dt.getHttpExchange().sendResponseHeaders(200, s.length);
-        OutputStream st = dt.getHttpExchange().getResponseBody();
-        st.write(s);
-        st.close();
+        dt.sendResponse(200, "khodafez");
     }
 }
 
@@ -40,11 +32,7 @@ class jafar2Controller {
         String d = dt.getPathVariables().size() +
                    dt.getPathVariables().get(0) +
                    dt.getPathVariables().get(1);
-        byte[] s = d.getBytes();
-        dt.getHttpExchange().sendResponseHeaders(200, s.length);
-        OutputStream st = dt.getHttpExchange().getResponseBody();
-        st.write(s);
-        st.close();
+        dt.sendResponse(200, d);
     }
 }
 
@@ -61,7 +49,7 @@ public class WebTest {
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("salam", new String(res.getEntity().getContent().readAllBytes()));
+        Assert.assertEquals("\"salam\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -76,7 +64,7 @@ public class WebTest {
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("khodafez", new String(res.getEntity().getContent().readAllBytes()));
+        Assert.assertEquals("\"khodafez\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -91,7 +79,7 @@ public class WebTest {
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("21234a5tamano", new String(res.getEntity().getContent().readAllBytes()));
+        Assert.assertEquals("\"21234a5tamano\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -106,7 +94,7 @@ public class WebTest {
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("salamAzMa", new String(res.getEntity().getContent().readAllBytes()));
+        Assert.assertEquals("\"salamAzMa\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -148,6 +136,6 @@ public class WebTest {
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("salamAzMa", new String(res.getEntity().getContent().readAllBytes()));
+        Assert.assertEquals("\"salamAzMa\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 }

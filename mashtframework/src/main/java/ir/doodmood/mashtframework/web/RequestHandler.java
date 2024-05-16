@@ -26,7 +26,8 @@ class RequestHandler implements HttpHandler {
 
         // TODO: handle HEAD and other stuff...
 
-        runPath(context, context.getLinkList());
+        if (!runPath(context, context.getLinkList()))
+            context.sendResponse(404, "Not Found");
     }
 
     void addPath(LinkedList<String> path, Method endpoint, Class method) throws DuplicatePathAndMethodException {
@@ -87,7 +88,6 @@ class RequestHandler implements HttpHandler {
             dto.popPathVariable();
         }
 
-        dto.sendResponse(404, "Not Found");
         return false;
     }
 }

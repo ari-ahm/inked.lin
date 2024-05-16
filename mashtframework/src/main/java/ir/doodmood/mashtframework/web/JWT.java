@@ -20,7 +20,7 @@ import java.util.Base64;
 
 @Component
 public class JWT {
-    private final String key;
+    private final byte[] key;
     private final Logger logger;
 
     @Autowired
@@ -29,12 +29,17 @@ public class JWT {
             logger.critical("JWT key is not provided.");
             throw new CriticalError();
         }
-        this.key = key;
+        try {
+            this.key = Base64.getDecoder().decode(key);
+        } catch (Exception e) {
+            logger.critical("Could not decode the JWT Key as base64 :", e.getMessage());
+            throw new CriticalError();
+        }
         this.logger = logger;
     }
 
     public String sign(String header, String payload) {
-        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "HmacSHA256");
+        SecretKeySpec secretKey = new SecretKeySpec(key, "HmacSHA256");
         Mac mac;
         try {
             mac = Mac.getInstance("HmacSHA256");
@@ -118,7 +123,7 @@ public class JWT {
 
         ret.remove("exp");
         ret.remove("iat");
-        ret.remove("csrfToken")
+        ret.remove("csrfToken");
 
         return new Gson().fromJson(ret, clazz);
     }

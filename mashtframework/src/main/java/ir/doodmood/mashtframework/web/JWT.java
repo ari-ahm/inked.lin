@@ -55,12 +55,14 @@ public class JWT {
         return System.currentTimeMillis() / 1000;
     }
 
-    public String getToken(Object payload, long lifetime) {
+    public String getToken(Object payload, long lifetime, String csrfToken) {
         JsonObject p = new Gson().toJsonTree(payload).getAsJsonObject();
         long time = getTime();
         if (lifetime >= 0)
             p.addProperty("exp", time + lifetime);
         p.addProperty("iat", time);
+        if (csrfToken != null)
+            p.addProperty("csrfToken", csrfToken);
         String header = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
 
         String payloadb64 = Base64.getUrlEncoder().encodeToString(p.toString().getBytes()).replace("=", "");
@@ -68,6 +70,14 @@ public class JWT {
         String signb64 = sign(headerb64, payloadb64);
 
         return headerb64 + "." + payloadb64 + "." + signb64;
+    }
+
+    public String getToken(Object payload, long lifetime) {
+        return getToken(payload, lifetime, null);
+    }
+
+    public String getToken(Object payload) {
+        return getToken(payload, -1, null);
     }
 
     public boolean verify(String token) {
@@ -108,6 +118,7 @@ public class JWT {
 
         ret.remove("exp");
         ret.remove("iat");
+        ret.remove("csrfToken")
 
         return new Gson().fromJson(ret, clazz);
     }

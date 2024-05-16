@@ -1,6 +1,7 @@
 package ir.doodmood.mashtframework.web;
 
 import ir.doodmood.mashtframework.core.ComponentFactory;
+import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.JWTTokenExpiredException;
 import ir.doodmood.mashtframework.exception.JWTVerificationFailedException;
 import org.junit.Assert;
@@ -32,5 +33,12 @@ public class JWTTest {
         String token = jwt.getToken(new John("salam"), 1);
         Thread.sleep(2000);
         jwt.getPayload(John.class, token);
+    }
+
+    @Test
+    public void csrfTest() throws Exception {
+        JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
+        String token = jwt.getToken(new John("salam"), 1, jwt.generateCSRFToken(16));
+        ((Logger) ComponentFactory.factory(Logger.class).getNew()).debug(token);
     }
 }

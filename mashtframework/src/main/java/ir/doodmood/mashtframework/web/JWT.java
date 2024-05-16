@@ -17,11 +17,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.random.RandomGenerator;
 
 @Component
 public class JWT {
     private final byte[] key;
     private final Logger logger;
+    private final static byte[] hexCharset = "0123456789abcdef".getBytes();
 
     @Autowired
     private JWT(@Properties("JWT_key") String key, Logger logger) {
@@ -126,5 +128,22 @@ public class JWT {
         ret.remove("csrfToken");
 
         return new Gson().fromJson(ret, clazz);
+    }
+
+    public String generateCSRFToken(int length) {
+        byte[] ret = new byte[length];
+        RandomGenerator.getDefault().nextBytes(ret);
+
+        return encodeHex(ret);
+    }
+
+    public String encodeHex(byte[] inp) {
+        StringBuilder ret = new StringBuilder();
+        for (byte i : inp) {
+            ret.append((char) hexCharset[(i >> 4) & 15]);
+            ret.append((char) hexCharset[i & 15]);
+        }
+
+        return ret.toString();
     }
 }

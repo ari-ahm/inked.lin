@@ -55,8 +55,7 @@ class RequestHandler implements HttpHandler {
         }
     }
 
-    public boolean runPath(MashtDTO dto, LinkedList<String> path)
-            throws IOException {
+    public boolean runPath(MashtDTO dto, LinkedList<String> path) {
         if (path == null || path.isEmpty()) {
             if (!methods.containsKey(dto.getRequestType().getName()))
                 return false;

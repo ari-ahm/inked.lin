@@ -1,6 +1,7 @@
 package ir.doodmood.mashtframework.web;
 
 import ir.doodmood.mashtframework.annotation.http.GetMapping;
+import ir.doodmood.mashtframework.annotation.http.PostMapping;
 import ir.doodmood.mashtframework.annotation.http.RestController;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -33,6 +34,22 @@ class jafar2Controller {
                    dt.getPathVariables().get(0) +
                    dt.getPathVariables().get(1);
         dt.sendResponse(200, d);
+    }
+}
+
+@RestController("{}/")
+class t1Controller {
+    @GetMapping("ali/")
+    public void ali(MashtDTO dt) throws Exception {
+        dt.sendResponse(200, "from t1");
+    }
+}
+
+@RestController("nmd/")
+class t2Controller {
+    @PostMapping("ali/")
+    public void ali(MashtDTO dt) throws Exception {
+        dt.sendResponse(200, "from t2");
     }
 }
 
@@ -137,5 +154,19 @@ public class WebTest {
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
         Assert.assertEquals("\"salamAzMa\"", new String(res.getEntity().getContent().readAllBytes()));
+    }
+
+    @Test
+    public void generalPathTest() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+        }
+
+        HttpUriRequest req = new HttpGet("http://localhost:8080/nmd/ali");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assert.assertEquals("\"from t1\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 }

@@ -66,7 +66,7 @@ class RequestHandler implements HttpHandler {
                         dto);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
-                logger.error("Impossible error happened here. ", e.getMessage());
+                logger.error("Invocation target exception: ", e);
             }
             return true;
         }

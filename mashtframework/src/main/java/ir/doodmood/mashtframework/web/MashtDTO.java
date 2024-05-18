@@ -3,6 +3,7 @@ package ir.doodmood.mashtframework.web;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import ir.doodmood.mashtframework.annotation.http.*;
+import ir.doodmood.mashtframework.core.ComponentFactory;
 import lombok.Setter;
 
 import java.io.IOException;
@@ -77,5 +78,18 @@ public class MashtDTO {
 
     public List<String> getHttpRequestHeader(String key) {
         return httpExchange.getResponseHeaders().get(key);
+    }
+
+    public void setJWTToken(Object payload, long lifetime) {
+        JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
+        String csrf = jwt.generateCSRFToken(32);
+        httpExchange.getResponseHeaders().add("Set-Cookie", "JWT=" + jwt.getToken(payload, lifetime, csrf) + "; Secure");
+        httpExchange.getResponseHeaders().add("X-CSRF-Token", csrf);
+    }
+
+    public Object readJWTToken(Class clazz) {
+        JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
+
+        return null;
     }
 }

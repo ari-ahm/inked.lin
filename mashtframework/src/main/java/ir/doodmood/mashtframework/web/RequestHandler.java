@@ -87,6 +87,7 @@ class RequestHandler implements HttpHandler {
             dto.popPathVariable();
         }
 
+        path.addFirst(nextPath);
         return false;
     }
 }

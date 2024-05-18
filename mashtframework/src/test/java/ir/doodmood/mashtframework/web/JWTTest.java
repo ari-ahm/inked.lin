@@ -7,11 +7,18 @@ import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.JWTTokenExpiredException;
 import ir.doodmood.mashtframework.exception.JWTVerificationFailedException;
+import lombok.Getter;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 
+@Getter
 class John {
     private String name;
     public John(String name) {
@@ -30,8 +37,8 @@ class aliton {
     }
 
     @PostMapping
-    public void post(MashtDTO dt) throws IOException {
-        dt.readJWTToken(John.class);
+    public void post(MashtDTO dt) throws Exception {
+        dt.sendResponse(((John) dt.readJWTToken(John.class)).getName());
     }
 }
 
@@ -45,7 +52,7 @@ public class JWTTest {
     @Test(expected = JWTVerificationFailedException.class)
     public void verificationTest() throws Exception {
         JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
-        jwt.getPayload(John.class, jwt.getToken(new John("salam"), 10) + "sa");
+        jwt.getPayload(John.class, jwt.getToken(new John("salam"), 10) + "sa", null);
     }
 
     @Test(expected = JWTTokenExpiredException.class)
@@ -53,7 +60,7 @@ public class JWTTest {
         JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
         String token = jwt.getToken(new John("salam"), 1);
         Thread.sleep(2000);
-        jwt.getPayload(John.class, token);
+        jwt.getPayload(John.class, token, null);
     }
 
     @Test
@@ -64,13 +71,15 @@ public class JWTTest {
     }
 
 //    @Test
-//    public void serverTest() throws Exception {
+//    public void cookieTest() throws Exception {
 //        try {
 //            MashtApplication.run(JWTTest.class);
 //        } catch (Exception e) {
 //
 //        }
 //
-//        Thread.sleep(10000000);
+//        Thread.sleep(1000000);
+//
+//          // tests were done in postman bc using the cookieManager was too hard to write just one test.
 //    }
 }

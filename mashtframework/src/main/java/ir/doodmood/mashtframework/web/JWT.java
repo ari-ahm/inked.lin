@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.random.RandomGenerator;
 
-@Component
+@Component(singleton = true)
 public class JWT {
     private final byte[] key;
     private final Logger logger;
@@ -108,9 +108,9 @@ public class JWT {
         return true;
     }
 
-    public Object getPayload(Class clazz, String token) throws JWTVerificationFailedException, JWTTokenExpiredException {
+    public Object getPayload(Class clazz, String token, String csrf) throws JWTVerificationFailedException, JWTTokenExpiredException {
         if (!verify(token)) {
-            logger.error("invalid JWT token received :", token);
+            logger.error("invalid JWT token received(invalid signature) :", token);
             throw new JWTVerificationFailedException();
         }
 
@@ -118,9 +118,15 @@ public class JWT {
         while (payload.length() % 4 != 0) payload += "=";
         JsonObject ret = JsonParser.parseString(new String(Base64.getUrlDecoder().decode(payload), StandardCharsets.UTF_8)).getAsJsonObject();
         long time = getTime();
-        if ((ret.get("exp") != null && ret.get("exp").getAsInt() < time) || ret.get("iat").getAsInt() > time) {
+        if ((ret.get("exp") != null && ret.get("exp").getAsInt() < time) ||
+                (ret.get("iat") != null && ret.get("iat").getAsInt() > time)) {
             logger.info("JWT token expired.");
             throw new JWTTokenExpiredException();
+        }
+
+        if (ret.get("csrfToken") != null && (csrf == null || !ret.get("csrfToken").getAsString().equals(csrf))) {
+            logger.error("invalid JWT token received(invalid csrf token) :", token);
+            throw new JWTVerificationFailedException();
         }
 
         ret.remove("exp");

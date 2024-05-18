@@ -12,7 +12,7 @@ public class Logger {
         DEBUG("Debug", Colors.BLUE),
         WARNING("Warning", Colors.YELLOW),
         ERROR("Error", Colors.RED),
-        CRITICAL("Critical", Colors.RED);
+        CRITICAL("Critical", Colors.RED_BACKGROUND);
 
         private String text;
         private Colors color;
@@ -38,6 +38,8 @@ public class Logger {
         LIME_BLUE("\033[36m"),
         WHITE("\033[37m"),
         YELLOW("\033[33m"),
+        RED_BACKGROUND("\033[39m\033[41m"),
+        ARIAN("\033[0m\033[38m"),
         RESET("\033[0m");
 
         private String ANSI;
@@ -67,12 +69,12 @@ public class Logger {
     }
 
     private String generateMessage(Object... messages) {
-        String message = "";
-        for (int i = 0; i < messages.length; i++) {
+        String message = (String) messages[0];
+        for (int i = 1; i < messages.length; i++) {
             message = message + " " + messages[i];
         }
 
-        return message;
+        return message + setColor(Colors.ARIAN,  " - From: " + Thread.currentThread().getStackTrace()[3].getMethodName());
     }
 
     public void debug(Object... messages) {

@@ -74,7 +74,8 @@ public class Logger {
             message = message + " " + messages[i];
         }
 
-        return message + setColor(Colors.ARIAN,  " - From: " + Thread.currentThread().getStackTrace()[3].getMethodName());
+        StackTraceElement otherInfo = Thread.currentThread().getStackTrace()[3];
+        return message + setColor(Colors.ARIAN,  " - From: " + otherInfo.getClassLoaderName() + "." + otherInfo.getMethodName());
     }
 
     public void debug(Object... messages) {

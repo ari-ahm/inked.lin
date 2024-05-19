@@ -26,7 +26,8 @@ class RequestHandler implements HttpHandler {
 
         // TODO: handle HEAD and other stuff...
 
-        runPath(context, context.getLinkList());
+        if (!runPath(context, context.getLinkList()))
+            context.sendResponse(404, "Not Found");
     }
 
     void addPath(LinkedList<String> path, Method endpoint, Class method) throws DuplicatePathAndMethodException {
@@ -54,8 +55,7 @@ class RequestHandler implements HttpHandler {
         }
     }
 
-    public boolean runPath(MashtDTO dto, LinkedList<String> path)
-            throws IOException {
+    public boolean runPath(MashtDTO dto, LinkedList<String> path) {
         if (path == null || path.isEmpty()) {
             if (!methods.containsKey(dto.getRequestType().getName()))
                 return false;
@@ -66,7 +66,7 @@ class RequestHandler implements HttpHandler {
                         dto);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
-                logger.error("Impossible error happened here. ", e.getMessage());
+                logger.error("Invocation target exception: ", e);
             }
             return true;
         }
@@ -87,7 +87,7 @@ class RequestHandler implements HttpHandler {
             dto.popPathVariable();
         }
 
-        dto.sendResponse(404, "Not Found");
+        path.addFirst(nextPath);
         return false;
     }
 }

@@ -4,5 +4,6 @@
     "username": "John",
     "password": "Doe"
   },
-  "s3": 12
+  "s3": 12,
+  "JWT_key": "salama=="
 }

@@ -2,12 +2,23 @@ package ir.doodmood.mashtframework.db;
 
 import com.mongodb.client.FindIterable;
 import org.bson.Document;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.*;
+import org.testcontainers.containers.MongoDBContainer;
 
 public class MongoDBTest {
-//    private final MongoDB mongo = new MongoDB("mongodb://root:root@localhost:27017");
-//
+    private final MongoDB mongo = new MongoDB("mongodb://localhost:27017");
+    private static MongoDBContainer mongoContainer = new MongoDBContainer("mongo:7-jammy").withExposedPorts(27017);
+
+    @BeforeAll
+    public static void init() {
+        mongoContainer.start();
+    }
+
+    @AfterAll
+    public static void close() {
+        mongoContainer.close();
+    }
+
 //    @Test
 //    public void DataBaseConnection() {
 //        mongo.close();

@@ -37,6 +37,16 @@ class jafar2Controller {
     }
 }
 
+@RestController("mammad/{}/")
+class jafar30Controller {
+    @GetMapping("2/")
+    private void ali10(MashtDTO dt) throws Exception {
+        String d = dt.getPathVariables().size() +
+                dt.getPathVariables().get(0);
+        dt.sendResponse(200, d);
+    }
+}
+
 @RestController("{}/")
 class t1Controller {
     @GetMapping("ali/")
@@ -168,5 +178,65 @@ public class WebTest {
 
         Assert.assertEquals(200, res.getStatusLine().getStatusCode());
         Assert.assertEquals("\"from t1\"", new String(res.getEntity().getContent().readAllBytes()));
+    }
+
+    @Test
+    public void pathVariableTest2() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+
+        }
+
+        HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/2");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assert.assertEquals("\"11234a5\"", new String(res.getEntity().getContent().readAllBytes()));
+    }
+
+
+    @Test
+    public void pathVariableTest3() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+
+        }
+
+        HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/3");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+    }
+
+
+    @Test
+    public void pathVariableTest4() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+
+        }
+
+        HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+    }
+
+
+    @Test
+    public void pathVariableTest5() throws Exception {
+        try {
+            MashtApplication.run(WebTest.class);
+        } catch (Exception e) {
+
+        }
+
+        HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1/gfsgsgfs/salam");
+        HttpResponse res = HttpClientBuilder.create().build().execute(req);
+
+        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
     }
 }

@@ -6,7 +6,6 @@ import ir.doodmood.mashtframework.annotation.http.RestController;
 import ir.doodmood.mashtframework.web.MashtDTO;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 @RestController("/javad")
 public class javad {

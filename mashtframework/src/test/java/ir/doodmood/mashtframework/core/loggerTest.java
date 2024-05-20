@@ -1,6 +1,6 @@
 package ir.doodmood.mashtframework.core;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class loggerTest {
     private Logger logger = new Logger();

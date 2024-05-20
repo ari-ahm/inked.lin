@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class MongoDBTest {
-    private final MongoDB mongo = new MongoDB("mongodb://localhost:27017/inkedLin");
+    private final MongoDB mongo = new MongoDB("mongodb://root:root@localhost:27017");
 
     @Test
     public void DataBaseConnection() {

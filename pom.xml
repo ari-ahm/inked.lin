@@ -67,6 +67,21 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>6.4.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.common</groupId>
+                <artifactId>hibernate-commons-annotations</artifactId>
+                <version>6.0.6.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.6.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

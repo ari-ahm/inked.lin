@@ -6,17 +6,24 @@ import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Component;
 import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Logger;
+import ir.doodmood.mashtframework.exception.CriticalError;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 @Component
 class RequestHandler implements HttpHandler {
     private final HashMap<String, Method> methods = new HashMap<>();
+    private final HashMap<String, List<Class>> methodsSingature = new HashMap<>();
     private final HashMap<String, RequestHandler> routes = new HashMap<>();
     private final Logger logger;
 
@@ -40,10 +47,23 @@ class RequestHandler implements HttpHandler {
 
             endpoint.setAccessible(true);
 
-            if (methods.containsKey(method.getName()))
+            if (methods.containsKey(method.getName())) {
+                logger.critical("Duplicate path in controller method: " + endpoint.getName());
                 throw new DuplicatePathAndMethodException(String.format("In method : %s", endpoint.getName()));
+            }
 
             methods.put(method.getName(), endpoint);
+            List<Class> signList = new ArrayList<>();
+            methodsSingature.put(method.getName(), signList);
+
+            for (Parameter i : endpoint.getParameters()) {
+                if (!i.getType().equals(MashtDTO.class) && !i.getType().equals(Session.class)) {
+                    logger.critical("Invalid requirement", i.getType().getName(), "in method:" + endpoint.getName());
+                    throw new CriticalError();
+                }
+
+                signList.add(i.getType());
+            }
 
             return;
         }
@@ -65,11 +85,31 @@ class RequestHandler implements HttpHandler {
             if (!methods.containsKey(dto.getRequestType().getName()))
                 return false;
 
+            List<Class> argRequirements = methodsSingature.get(dto.getRequestType().getName());
+            Object[] methodArgs = new Object[methodsSingature.get(dto.getRequestType().getName()).size()];
+            List<Transaction> transactions = new ArrayList<>();
             try {
+                for (int i = 0; i < argRequirements.size(); i++) {
+                    if (argRequirements.get(i).equals(MashtDTO.class))
+                        methodArgs[i] = dto;
+                    else if (argRequirements.get(i).equals(Session.class)) {
+                        methodArgs[i] = MashtApplication.getHibernateSessionFactory().openSession();
+                        transactions.add(((Session) methodArgs[i]).beginTransaction());
+                    }
+                }
                 methods.get(dto.getRequestType().getName()).invoke(
                         ComponentFactory.factory(methods.get(dto.getRequestType().getName()).getDeclaringClass()).getNew(),
-                        dto);
+                        methodArgs);
+                for (Transaction transaction : transactions)
+                    transaction.commit();
             } catch (InvocationTargetException e) {
+                for (Transaction transaction : transactions) {
+                    try {
+                        if (transaction != null && transaction.isActive())
+                            transaction.rollback();
+                    } catch (Exception ignored) {}
+                }
+
                 logger.error("Invocation target exception: ", e);
                 try {
                     dto.sendResponse(500, "Internal server error");
@@ -78,6 +118,16 @@ class RequestHandler implements HttpHandler {
                 }
             } catch (IllegalAccessException e) {
                 logger.error("IllegalAccessException(shouldn't be happening): ", e);
+            } finally {
+                for (Object i : methodArgs) {
+                    if (i instanceof Session) {
+                        Session session = (Session) i;
+                        try {
+                            if (session.isConnected())
+                                session.close();
+                        } catch (Exception ignored) {}
+                    }
+                }
             }
             return true;
         }

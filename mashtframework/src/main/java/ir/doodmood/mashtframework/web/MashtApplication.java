@@ -5,6 +5,9 @@ import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Config;
 import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
+import lombok.Getter;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.io.File;
@@ -20,6 +23,8 @@ import java.util.Set;
 public class MashtApplication {
     private final Server server;
     private final RequestHandler requestHandler;
+    @Getter
+    private static SessionFactory hibernateSessionFactory;
     private static boolean isAlreadyUp;
 
     public static MashtApplication run(Class mainClass)
@@ -33,6 +38,12 @@ public class MashtApplication {
 
     private MashtApplication(Class mainClass)
             throws DuplicatePathAndMethodException {
+        try {
+             this.hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
+        } catch (Exception e) {
+            Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
+            logger.error("could not connect to database", e);
+        }
         ComponentFactory srvFactory = ComponentFactory.factory(Server.class);
         server = (Server)srvFactory.getNew();
         this.requestHandler = server.getRequestHandler();
@@ -94,11 +105,6 @@ public class MashtApplication {
                     if (!m.isAnnotationPresent(i)) continue;
 
                     Parameter[] parameters = m.getParameters();
-                    if (parameters.length != 1 || !parameters[0].getType().equals(MashtDTO.class)) {
-                        Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
-                        logger.error("Method ", m.getName(), " doesn't have the required signature: void func(MashtDTO). skipping");
-                        continue;
-                    }
 
                     LinkedList<String> subPath = new LinkedList<>(path);
 

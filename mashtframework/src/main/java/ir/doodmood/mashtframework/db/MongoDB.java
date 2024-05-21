@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 
+@Deprecated
 public class MongoDB {
     private final String uri;
     private final Logger logger;

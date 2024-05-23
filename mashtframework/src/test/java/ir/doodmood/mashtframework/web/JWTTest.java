@@ -8,13 +8,8 @@ import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.JWTTokenExpiredException;
 import ir.doodmood.mashtframework.exception.JWTVerificationFailedException;
 import lombok.Getter;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 
@@ -46,21 +41,25 @@ public class JWTTest {
     @Test
     public void simpleTest() {
         JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
-        Assert.assertEquals(true, jwt.verify(jwt.getToken(new John("salam"), 10)));
+        Assertions.assertEquals(true, jwt.verify(jwt.getToken(new John("salam"), 10)));
     }
 
-    @Test(expected = JWTVerificationFailedException.class)
+    @Test
     public void verificationTest() throws Exception {
-        JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
-        jwt.getPayload(John.class, jwt.getToken(new John("salam"), 10) + "sa", null);
+        Assertions.assertThrowsExactly(JWTVerificationFailedException.class, () -> {
+            JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
+            jwt.getPayload(John.class, jwt.getToken(new John("salam"), 10) + "sa", null);
+        });
     }
 
-    @Test(expected = JWTTokenExpiredException.class)
+    @Test
     public void expiredTest2() throws Exception {
-        JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
-        String token = jwt.getToken(new John("salam"), 1);
-        Thread.sleep(2000);
-        jwt.getPayload(John.class, token, null);
+        Assertions.assertThrowsExactly(JWTTokenExpiredException.class, () -> {
+            JWT jwt = (JWT) ComponentFactory.factory(JWT.class).getNew();
+            String token = jwt.getToken(new John("salam"), 1);
+            Thread.sleep(2000);
+            jwt.getPayload(John.class, token, null);
+        });
     }
 
     @Test

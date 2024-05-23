@@ -1,14 +1,22 @@
 services:
-#  mongodb:
-#    image: "mongo:7-jammy"
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root # must be changed...
-#      MONGO_INITDB_ROOT_PASSWORD: root # ...
-#    volumes:
-#      - inkedlin_mongodb:/data/db
+  mongo:
+    image: "mongo:7-jammy"
+    container_name: inkedlin-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root # must be changed...
+      MONGO_INITDB_ROOT_PASSWORD: root # ...
+    volumes:
+      - mongo-volume:/data/db
   inkout:
     build:
-      ./inkout/
+      context: .
+      target: mashtframework-install
+      dockerfile: Dockerfile
+    image: inkout:latest
+    container_name: inkedlin-inkout
+    depends_on:
+      mongo:
+        condition: service_healthy
 
-#volumes:
-#  inkedlin_mongodb:
+volumes:
+  mongo-volume:

@@ -4,10 +4,8 @@ import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Component;
 import ir.doodmood.mashtframework.exception.CircularDependencyException;
 import ir.doodmood.mashtframework.exception.CriticalError;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.HashMap;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 @Component
 class Mammad {
@@ -87,56 +85,58 @@ public class ComponentTest {
     public void publicNoArgsConstructor() throws Throwable {
         ComponentFactory c = ComponentFactory.factory(Mammad.class);
         Mammad m1 = (Mammad)c.getNew();
-        Assert.assertEquals(m1.getSix(), 6);
+        Assertions.assertEquals(m1.getSix(), 6);
     }
 
     @Test
     public void privateNoArgsConstructor() throws Throwable {
         ComponentFactory c = ComponentFactory.factory(Ali.class);
         Ali a1 = (Ali)c.getNew();
-        Assert.assertEquals(a1.getSeven(), 7);
+        Assertions.assertEquals(a1.getSeven(), 7);
     }
 
     @Test
     public void publicWithDependencyConstructor() throws Throwable {
         ComponentFactory c = ComponentFactory.factory(Jafar.class);
         Jafar j1 = (Jafar)c.getNew();
-        Assert.assertEquals(j1.getMul(), 42);
+        Assertions.assertEquals(j1.getMul(), 42);
     }
 
-    @Test(expected = CriticalError.class)
+    @Test()
     public void circularDependencyTest() throws Throwable {
-        ComponentFactory c = ComponentFactory.factory(Circ1.class);
+        Assertions.assertThrowsExactly(CriticalError.class, () -> {
+            ComponentFactory c = ComponentFactory.factory(Circ1.class);
+        });
     }
 
     @Test
     public void singletonTest() throws Throwable {
         ComponentFactory c = ComponentFactory.factory(Sing.class);
         Sing s1 = (Sing)c.getNew();
-        Assert.assertEquals(s1.getT(), 1);
+        Assertions.assertEquals(s1.getT(), 1);
         s1 = (Sing)c.getNew();
-        Assert.assertEquals(s1.getT(), 2);
+        Assertions.assertEquals(s1.getT(), 2);
         ComponentFactory.setSingleton(Sing.class, true);
         s1 = (Sing)c.getNew();
-        Assert.assertEquals(s1.getT(), 3);
+        Assertions.assertEquals(s1.getT(), 3);
         s1 = (Sing)c.getNew();
-        Assert.assertEquals(s1.getT(), 3);
+        Assertions.assertEquals(s1.getT(), 3);
         s1 = (Sing)c.getNew();
-        Assert.assertEquals(s1.getT(), 3);
+        Assertions.assertEquals(s1.getT(), 3);
     }
 
     @Test
     public void singleton2Test() throws Throwable {
         ComponentFactory c = ComponentFactory.factory(Sing2.class);
         Sing2 s1 = (Sing2)c.getNew();
-        Assert.assertEquals(s1.getT(), 1);
+        Assertions.assertEquals(s1.getT(), 1);
         s1 = (Sing2)c.getNew();
-        Assert.assertEquals(s1.getT(), 1);
+        Assertions.assertEquals(s1.getT(), 1);
         s1 = (Sing2)c.getNew();
-        Assert.assertEquals(s1.getT(), 1);
+        Assertions.assertEquals(s1.getT(), 1);
         s1 = (Sing2)c.getNew();
-        Assert.assertEquals(s1.getT(), 1);
+        Assertions.assertEquals(s1.getT(), 1);
         s1 = (Sing2)c.getNew();
-        Assert.assertEquals(s1.getT(), 1);
+        Assertions.assertEquals(s1.getT(), 1);
     }
 }

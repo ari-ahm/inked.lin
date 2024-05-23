@@ -1,5 +1,6 @@
 package ir.doodmood.mashtframework.db;
 
+@Deprecated
 public class DocumentSchema {
     private String key;
     private Object value;

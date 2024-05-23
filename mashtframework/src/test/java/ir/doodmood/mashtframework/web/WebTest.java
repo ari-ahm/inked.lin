@@ -8,8 +8,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.OutputStream;
 
@@ -75,8 +75,8 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/ali/javad?id=7");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("\"salam\"", new String(res.getEntity().getContent().readAllBytes()));
+        Assertions.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals("\"salam\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -90,8 +90,8 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/ali");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("\"khodafez\"", new String(res.getEntity().getContent().readAllBytes()));
+        Assertions.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals("\"khodafez\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -105,8 +105,8 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1/tamano?id=tir");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("\"21234a5tamano\"", new String(res.getEntity().getContent().readAllBytes()));
+        Assertions.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals("\"21234a5tamano\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -120,8 +120,8 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/javad/ali");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("\"salamAzMa\"", new String(res.getEntity().getContent().readAllBytes()));
+        Assertions.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals("\"salamAzMa\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/javad/mammad");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals(404, res.getStatusLine().getStatusCode());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class WebTest {
         HttpUriRequest req = new HttpPost("http://localhost:8080/javad/ali");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals(404, res.getStatusLine().getStatusCode());
     }
 
     @Test
@@ -162,8 +162,8 @@ public class WebTest {
         HttpUriRequest req = new HttpPost("http://localhost:8080/javad/mammad");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("\"salamAzMa\"", new String(res.getEntity().getContent().readAllBytes()));
+        Assertions.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals("\"salamAzMa\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -176,8 +176,8 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/nmd/ali");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("\"from t1\"", new String(res.getEntity().getContent().readAllBytes()));
+        Assertions.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals("\"from t1\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
     @Test
@@ -191,8 +191,8 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/2");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(200, res.getStatusLine().getStatusCode());
-        Assert.assertEquals("\"11234a5\"", new String(res.getEntity().getContent().readAllBytes()));
+        Assertions.assertEquals(200, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals("\"11234a5\"", new String(res.getEntity().getContent().readAllBytes()));
     }
 
 
@@ -207,7 +207,7 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/3");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals(404, res.getStatusLine().getStatusCode());
     }
 
 
@@ -222,7 +222,7 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals(404, res.getStatusLine().getStatusCode());
     }
 
 
@@ -237,6 +237,6 @@ public class WebTest {
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1/gfsgsgfs/salam");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
 
-        Assert.assertEquals(404, res.getStatusLine().getStatusCode());
+        Assertions.assertEquals(404, res.getStatusLine().getStatusCode());
     }
 }

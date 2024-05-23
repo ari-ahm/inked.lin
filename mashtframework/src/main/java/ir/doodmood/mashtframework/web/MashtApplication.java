@@ -1,13 +1,10 @@
 package ir.doodmood.mashtframework.web;
 
 import ir.doodmood.mashtframework.annotation.http.RestController;
-import ir.doodmood.mashtframework.core.ComponentFactory;
-import ir.doodmood.mashtframework.core.Config;
-import ir.doodmood.mashtframework.core.Logger;
+import ir.doodmood.mashtframework.core.*;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
 import lombok.Getter;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.io.File;
@@ -24,7 +21,6 @@ public class MashtApplication {
     private final Server server;
     private final RequestHandler requestHandler;
     @Getter
-    private static SessionFactory hibernateSessionFactory;
     private static boolean isAlreadyUp;
 
     public static MashtApplication run(Class mainClass)
@@ -38,12 +34,8 @@ public class MashtApplication {
 
     private MashtApplication(Class mainClass)
             throws DuplicatePathAndMethodException {
-        try {
-             this.hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
-        } catch (Exception e) {
-            Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
-            logger.error("could not connect to database", e);
-        }
+        ComponentFactory.addClassWrapper(SessionFactory.class, (HasFactoryMethod) ComponentFactory.factory(HibernateSessionFactoryWrapper.class).getNew());
+
         ComponentFactory srvFactory = ComponentFactory.factory(Server.class);
         server = (Server)srvFactory.getNew();
         this.requestHandler = server.getRequestHandler();

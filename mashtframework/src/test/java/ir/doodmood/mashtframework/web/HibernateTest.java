@@ -1,5 +1,6 @@
 package ir.doodmood.mashtframework.web;
 
+import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.http.GetMapping;
 import ir.doodmood.mashtframework.annotation.http.PostMapping;
 import ir.doodmood.mashtframework.annotation.http.RestController;
@@ -9,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -17,8 +19,15 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 @RestController("/dbtest")
 class DBTestController {
+    private SessionFactory sessionFactory;
+    @Autowired
+    private DBTestController(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
     @GetMapping
-    public void get(MashtDTO dt, Session session) throws Exception {
+    public void get(MashtDTO dt) throws Exception {
+        Session session = sessionFactory.openSession();
         TestEntity testEntity = new TestEntity();
         testEntity.setName("ali");
         testEntity.setAge(20);
@@ -26,12 +35,15 @@ class DBTestController {
         testEntity.setId(1L);
         session.save(testEntity);
         dt.sendResponse(200, "added");
+        session.close();
     }
 
     @PostMapping
-    public void post(MashtDTO dt, Session session) throws Exception {
+    public void post(MashtDTO dt) throws Exception {
+        Session session = sessionFactory.openSession();
         TestEntity testEntity = session.get(TestEntity.class, 1L);
         dt.sendResponse(200, testEntity.getName() + testEntity.getAge() + testEntity.getAddress());
+        session.close();
     }
 }
 

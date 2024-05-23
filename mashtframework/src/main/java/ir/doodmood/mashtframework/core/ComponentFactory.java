@@ -12,10 +12,6 @@ import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import ir.doodmood.mashtframework.annotation.*;
 
-interface HasFactoryMethod {
-    Object getNew();
-}
-
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ComponentFactory implements HasFactoryMethod {
     private final ArrayList<HasFactoryMethod> dependencies = new ArrayList<>();
@@ -25,6 +21,7 @@ public class ComponentFactory implements HasFactoryMethod {
     private boolean isResolving = false;
     private static final HashMap<String, Object> singletons = new HashMap<>();
     private final boolean singleton;
+    private static final HashMap<String, HasFactoryMethod> wrappers = new HashMap<>();
 
     private static class PropertiesComponent implements HasFactoryMethod {
         private final String key;
@@ -135,15 +132,16 @@ public class ComponentFactory implements HasFactoryMethod {
                 throw new IncorrectAnnotationException(String.format("Class %s's Constructor has a primitive type", persistentClass.getName()));
             if (p.getAnnotation(Properties.class) != null) {
                 String key = p.getAnnotation(Properties.class).value();
-                ((Config)factory(Config.class).getNew()).get(key, p.getType());
+                ((Config) factory(Config.class).getNew()).get(key, p.getType());
                 dependencies.add(new PropertiesComponent(key, p.getType()));
             } else if (components.containsKey(p.getType().getName())) {
                 dependencies.add(components.get(p.getType().getName()));
                 if (components.get(p.getType().getName()).isResolving)
                     throw new CircularDependencyException();
+            } else if (wrappers.containsKey(p.getType().getName())) {
+                dependencies.add(wrappers.get(p.getType().getName()));
             } else {
                 ComponentFactory c = new ComponentFactory(p.getType());
-
                 dependencies.add(c);
             }
         }
@@ -161,5 +159,9 @@ public class ComponentFactory implements HasFactoryMethod {
             singletons.remove(singletonClass.getName());
 
         return factory(singletonClass).getNew();
+    }
+
+    public static void addClassWrapper(Class clazz, HasFactoryMethod wrapper) {
+        wrappers.put(clazz.getName(), wrapper);
     }
 }

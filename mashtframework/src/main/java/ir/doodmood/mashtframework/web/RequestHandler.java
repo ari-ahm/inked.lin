@@ -8,13 +8,10 @@ import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.CriticalError;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -56,13 +53,9 @@ class RequestHandler implements HttpHandler {
             List<Class> signList = new ArrayList<>();
             methodsSingature.put(method.getName(), signList);
 
-            for (Parameter i : endpoint.getParameters()) {
-                if (!i.getType().equals(MashtDTO.class) && !i.getType().equals(Session.class)) {
-                    logger.critical("Invalid requirement", i.getType().getName(), "in method:" + endpoint.getName());
-                    throw new CriticalError();
-                }
-
-                signList.add(i.getType());
+            if (endpoint.getParameters().length != 1 || !endpoint.getParameters()[0].getType().equals(MashtDTO.class)) {
+                logger.critical("Invalid requirements in method:" + endpoint.getDeclaringClass().getName(), endpoint.getName());
+                throw new CriticalError();
             }
 
             return;
@@ -85,31 +78,11 @@ class RequestHandler implements HttpHandler {
             if (!methods.containsKey(dto.getRequestType().getName()))
                 return false;
 
-            List<Class> argRequirements = methodsSingature.get(dto.getRequestType().getName());
-            Object[] methodArgs = new Object[methodsSingature.get(dto.getRequestType().getName()).size()];
-            List<Transaction> transactions = new ArrayList<>();
             try {
-                for (int i = 0; i < argRequirements.size(); i++) {
-                    if (argRequirements.get(i).equals(MashtDTO.class))
-                        methodArgs[i] = dto;
-                    else if (argRequirements.get(i).equals(Session.class)) {
-                        methodArgs[i] = MashtApplication.getHibernateSessionFactory().openSession();
-                        transactions.add(((Session) methodArgs[i]).beginTransaction());
-                    }
-                }
                 methods.get(dto.getRequestType().getName()).invoke(
                         ComponentFactory.factory(methods.get(dto.getRequestType().getName()).getDeclaringClass()).getNew(),
-                        methodArgs);
-                for (Transaction transaction : transactions)
-                    transaction.commit();
+                        dto);
             } catch (InvocationTargetException e) {
-                for (Transaction transaction : transactions) {
-                    try {
-                        if (transaction != null && transaction.isActive())
-                            transaction.rollback();
-                    } catch (Exception ignored) {}
-                }
-
                 logger.error("Invocation target exception: ", e);
                 try {
                     dto.sendResponse(500, "Internal server error");
@@ -118,16 +91,6 @@ class RequestHandler implements HttpHandler {
                 }
             } catch (IllegalAccessException e) {
                 logger.error("IllegalAccessException(shouldn't be happening): ", e);
-            } finally {
-                for (Object i : methodArgs) {
-                    if (i instanceof Session) {
-                        Session session = (Session) i;
-                        try {
-                            if (session.isConnected())
-                                session.close();
-                        } catch (Exception ignored) {}
-                    }
-                }
             }
             return true;
         }

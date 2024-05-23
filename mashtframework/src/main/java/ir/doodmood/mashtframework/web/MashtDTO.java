@@ -1,6 +1,9 @@
 package ir.doodmood.mashtframework.web;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.sun.net.httpserver.HttpExchange;
 import ir.doodmood.mashtframework.annotation.http.*;
 import ir.doodmood.mashtframework.core.ComponentFactory;
@@ -10,6 +13,7 @@ import ir.doodmood.mashtframework.exception.JWTVerificationFailedException;
 import lombok.Setter;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -147,5 +151,9 @@ public class MashtDTO {
     public HashMap<String, String> getCookies() {
         if (cookies == null) readCookies();
         return new HashMap<>(cookies);
+    }
+
+    public Object getRequestBody(Class clazz) {
+        return new Gson().fromJson(new InputStreamReader(httpExchange.getRequestBody()), clazz);
     }
 }

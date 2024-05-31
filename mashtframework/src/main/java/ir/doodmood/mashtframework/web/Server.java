@@ -21,6 +21,7 @@ class Server {
     @Getter
     private final RequestHandler requestHandler;
     private final Logger logger;
+    private HttpServer server = null;
 
     @Autowired
     private Server(@Properties("listen_port") Integer listenPort,
@@ -40,7 +41,6 @@ class Server {
     }
 
     public void run() {
-        HttpServer server = null;
         try {
             server = HttpServer.create(new InetSocketAddress(listenHost, listenPort), 0);
         } catch (IOException e) {
@@ -50,5 +50,9 @@ class Server {
         server.createContext(appRootPath, requestHandler);
         server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
         server.start();
+    }
+
+    public void close() {
+        server.stop(0);
     }
 }

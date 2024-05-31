@@ -5,15 +5,13 @@ import ir.doodmood.mashtframework.core.*;
 import ir.doodmood.mashtframework.exception.DuplicatePathAndMethodException;
 import lombok.Getter;
 import org.hibernate.SessionFactory;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -32,6 +30,11 @@ public class MashtApplication {
         return new MashtApplication(mainClass);
     }
 
+    public void close() {
+        server.close();
+        isAlreadyUp = false;
+    }
+
     private MashtApplication(Class mainClass)
             throws DuplicatePathAndMethodException {
         ComponentFactory.addClassWrapper(SessionFactory.class, (HasFactoryMethod) ComponentFactory.factory(HibernateSessionFactoryWrapper.class).getNew());
@@ -39,45 +42,17 @@ public class MashtApplication {
         ComponentFactory srvFactory = ComponentFactory.factory(Server.class);
         server = (Server)srvFactory.getNew();
         this.requestHandler = server.getRequestHandler();
-        Set<Class> packageClasses = findAllClassesInPackage(mainClass.getPackage().getName(), getResource(mainClass.getPackage().getName().replace(".", "/")));
+        Reflections reflections = new Reflections(mainClass.getPackage().getName(), new SubTypesScanner(false));
+        Set<Class<?>> packageClasses = reflections.getSubTypesOf(Object.class);
         resolveEndpoints(packageClasses);
         server.run();
     }
 
-    private File getResource(String path) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL resource = classLoader.getResource(path);
-        try {
-            return new File(resource.toURI());
-        } catch (URISyntaxException e) {
-            Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
-            logger.error("Impossible error? ", e);
-            return null;
-        }
-    }
-
-    private Set<Class> findAllClassesInPackage(String packageName, File dir) {
-        Set<Class> ret = new HashSet<>();
-        for (File file : dir.listFiles()) {
-            if (file.isDirectory()) {
-                ret.addAll(findAllClassesInPackage(packageName + "." + file.getName(), file));
-                continue;
-            }
-            if (file.getName().endsWith(".class")) {
-                try {
-                    ret.add(Class.forName(packageName + "." + file.getName().substring(0, file.getName().lastIndexOf("."))));
-                } catch (ClassNotFoundException e) {
-                    Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
-                    logger.error("Impossible error? ", e);
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    private void resolveEndpoints(Set<Class> packageClasses)
+    private void resolveEndpoints(Set<Class<?>> packageClasses)
             throws DuplicatePathAndMethodException {
+        Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
+
+
         Boolean singletonControllers = (Boolean) ((Config) ComponentFactory.factory(Config.class).getNew())
                 .get("singleton_controllers", Boolean.class);
         if (singletonControllers == null) singletonControllers = true;
@@ -104,7 +79,6 @@ public class MashtApplication {
                     try {
                         annotationValue = (String) i.getMethod("value").invoke(m.getAnnotation(i));
                     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                        Logger logger = (Logger) ComponentFactory.factory(Logger.class).getNew();
                         logger.error("Impossible error? ", e);
                     }
 
@@ -112,6 +86,8 @@ public class MashtApplication {
                     for (String j : annotationValue.split("/")) {
                         if (!j.isEmpty() && !j.isBlank()) subPath.add(j);
                     }
+
+                    logger.info("disovered path : ", subPath, i.getName());
 
                     requestHandler.addPath(subPath, m, i);
                 }

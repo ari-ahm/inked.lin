@@ -1,0 +1,7 @@
+{
+  "listen_host": "0.0.0.0",
+  "listen_port": "3000",
+  "app_root_path": "/api/v1/",
+  "JWT_key": "d4TZtpwUD+hZ9i6z7ghvySEpEMPkeAHm3W93HnilQFxd4/c8KXbrDmnL8XlYS/D4XdFoFNUeg60kJrF1fh97eGkfOETaD2eJPVQptMSRSgfbOZmaqRwOanB+dFvqpI2ypZx8O21TF/3SCdLQRe75XfoCbDFwEcqI8Y/NLBRMFvR+2avJrZt0KBqZRIskKVQza0e3d0iqnwUDw/8MGLPb4D5kdOYCbr6XIz0DBxVraISmZPr74u9VSPF6VfVifZuEJcQ1VBfqFiui0MfRzS57a03hlDTa5jllH2ldm1Gnfo2xBdsllbugw1PjizNzqGJgnU7kuQbmCtTQgtRc3zfatg==",
+  "user_password_salt": "ywh08AaLge+WjAPxchZs8qxYR1r9Wkf1meHDnTQ7/gipkVdfgSBAdN6CNX2EdT5VKxyCpMDadEVOiXYmyyE6yhqshAn57nTwLe6IZOIX5A/uUD4ZgXUz8nqo7S+7CsZm9GhPVzCcz66dl7oJw6gpU05JcrQsVLZXQzLnriZhKVE7pu5wjKMF4pIbzUqz2B7wsTC6Bw/+VC/RAKvIzY0zWhGBLd/XMk6YM3rjsvmUDv4DVolCgrEiXhyLT9aqjlVHD2J8qx6G6XwTx+TPk0x7EqW7ulWBE1vF12CBWtjwL37OlXsV9Dhp+icaSsA90c0sPv2f2+iMmNflZOlwwRKaqQ=="
+}

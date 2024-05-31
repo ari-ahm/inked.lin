@@ -1,22 +1,29 @@
 services:
-  mongo:
-    image: "mongo:7-jammy"
-    container_name: inkedlin-mongo
+  postgres:
+    image: "postgres:13-alpine"
+    container_name: inkedlin-postgres
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root # must be changed...
-      MONGO_INITDB_ROOT_PASSWORD: root # ...
+      POSTGRES_USER: root # must be changed...
+      POSTGRES_PASSWORD: root # ...
+      POSTGRES_DB: inkedlin
     volumes:
-      - mongo-volume:/data/db
+      - postgres-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U root -d inkedlin
+      interval: 10s
+      timeout: 3s
+      retries: 3
   inkout:
     build:
       context: .
-      target: mashtframework-install
+      target: inkout-target
       dockerfile: Dockerfile
     image: inkout:latest
     container_name: inkedlin-inkout
     depends_on:
-      mongo:
-        condition: service_healthy
+      - postgres
+    ports:
+      - 3000:3000
 
 volumes:
-  mongo-volume:
+  postgres-volume:

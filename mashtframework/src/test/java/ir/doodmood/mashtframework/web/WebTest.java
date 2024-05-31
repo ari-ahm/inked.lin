@@ -1,5 +1,7 @@
 package ir.doodmood.mashtframework.web;
 
+import com.sun.net.httpserver.HttpServer;
+import ir.doodmood.mashtframework.BeforeAllExtension;
 import ir.doodmood.mashtframework.annotation.http.GetMapping;
 import ir.doodmood.mashtframework.annotation.http.PostMapping;
 import ir.doodmood.mashtframework.annotation.http.RestController;
@@ -8,8 +10,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.OutputStream;
 
@@ -63,14 +68,12 @@ class t2Controller {
     }
 }
 
+@ExtendWith({BeforeAllExtension.class})
 public class WebTest {
+
     @Test
     public void simpleTest() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/ali/javad?id=7");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -81,11 +84,7 @@ public class WebTest {
 
     @Test
     public void simpleTest2() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/ali");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -96,11 +95,7 @@ public class WebTest {
 
     @Test
     public void pathVariableTest() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1/tamano?id=tir");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -111,11 +106,7 @@ public class WebTest {
 
     @Test
     public void subPackageTest() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/javad/ali");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -126,11 +117,7 @@ public class WebTest {
 
     @Test
     public void _404Test() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/javad/mammad");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -140,11 +127,7 @@ public class WebTest {
 
     @Test
     public void _404Tes2t() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpPost("http://localhost:8080/javad/ali");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -154,10 +137,7 @@ public class WebTest {
 
     @Test
     public void postTest() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-        }
+        
 
         HttpUriRequest req = new HttpPost("http://localhost:8080/javad/mammad");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -168,10 +148,7 @@ public class WebTest {
 
     @Test
     public void generalPathTest() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/nmd/ali");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -182,11 +159,7 @@ public class WebTest {
 
     @Test
     public void pathVariableTest2() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/2");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -198,11 +171,7 @@ public class WebTest {
 
     @Test
     public void pathVariableTest3() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/3");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -213,11 +182,7 @@ public class WebTest {
 
     @Test
     public void pathVariableTest4() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);
@@ -228,11 +193,7 @@ public class WebTest {
 
     @Test
     public void pathVariableTest5() throws Exception {
-        try {
-            MashtApplication.run(WebTest.class);
-        } catch (Exception e) {
-
-        }
+        
 
         HttpUriRequest req = new HttpGet("http://localhost:8080/mammad/1234a5/1/gfsgsgfs/salam");
         HttpResponse res = HttpClientBuilder.create().build().execute(req);

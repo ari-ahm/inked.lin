@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Component;
+import ir.doodmood.mashtframework.annotation.Properties;
 import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Logger;
 import ir.doodmood.mashtframework.exception.CriticalError;
@@ -23,10 +24,20 @@ class RequestHandler implements HttpHandler {
     private final HashMap<String, List<Class>> methodsSingature = new HashMap<>();
     private final HashMap<String, RequestHandler> routes = new HashMap<>();
     private final Logger logger;
+    private final int pathPrefixCount;
 
     @Autowired
-    private RequestHandler(Logger logger) {
+    private RequestHandler(Logger logger, @Properties("app_root_path") String appRootPath) {
         this.logger = logger;
+
+        if (appRootPath == null)
+            appRootPath = "";
+
+        int cnt = 0;
+        for (String path : appRootPath.split("/"))
+            if (!path.isEmpty() && !path.isBlank())
+                cnt++;
+        this.pathPrefixCount = cnt;
     }
 
     @Override
@@ -35,7 +46,10 @@ class RequestHandler implements HttpHandler {
 
         // TODO: handle HEAD and other stuff...
 
-        if (!runPath(context, context.getLinkList()))
+        LinkedList<String> relativePath = context.getLinkList();
+        for (int i = 0; i < pathPrefixCount; i++)
+            relativePath.removeFirst();
+        if (!runPath(context, relativePath))
             context.sendResponse(404, "Not Found");
     }
 
@@ -83,7 +97,7 @@ class RequestHandler implements HttpHandler {
                         ComponentFactory.factory(methods.get(dto.getRequestType().getName()).getDeclaringClass()).getNew(),
                         dto);
             } catch (InvocationTargetException e) {
-                logger.error("Invocation target exception: ", e);
+                logger.error("Invocation target exception: ", e.getCause());
                 try {
                     dto.sendResponse(500, "Internal server error");
                 } catch (IOException ioException) {

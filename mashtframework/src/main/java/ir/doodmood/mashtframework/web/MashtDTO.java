@@ -5,6 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.sun.net.httpserver.HttpExchange;
+import ir.doodmood.mashtframework.annotation.gson.AllRequired;
+import ir.doodmood.mashtframework.annotation.gson.Optional;
+import ir.doodmood.mashtframework.annotation.gson.Required;
 import ir.doodmood.mashtframework.annotation.http.*;
 import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Logger;
@@ -15,6 +18,7 @@ import lombok.Setter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class MashtDTO {
@@ -154,6 +158,74 @@ public class MashtDTO {
     }
 
     public Object getRequestBody(Class clazz) {
-        return new Gson().fromJson(new InputStreamReader(httpExchange.getRequestBody()), clazz);
+        Object ret = new Gson().fromJson(new InputStreamReader(httpExchange.getRequestBody()), clazz);
+        if (!validateObject(ret))
+            return null;
+        return ret;
+    }
+
+    public boolean validateObject(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        for (Field field : obj.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            Object value = null;
+            try {
+                value = field.get(obj);
+            } catch (IllegalAccessException e) {
+                // impossible error
+            }
+
+            if ((field.isAnnotationPresent(Required.class) ||
+                        (obj.getClass().isAnnotationPresent(AllRequired.class) && !field.isAnnotationPresent(Optional.class)))
+                    && value == null) {
+                return false;
+            }
+
+            if (!isPrimitiveOrWrapper(field.getType()) && !isCollectionOrMap(field.getType())) {
+                if (!validateObject(value)) {
+                    return false;
+                }
+            }
+
+            if (isCollectionOrMap(field.getType())) {
+                if (value != null) {
+                    if (value instanceof Collection) {
+                        for (Object item : (Collection<?>) value) {
+                            if (!validateObject(item)) {
+                                return false;
+                            }
+                        }
+                    } else if (value instanceof Map) {
+                        for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
+                            if (!validateObject(entry.getKey()) || !validateObject(entry.getValue())) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isPrimitiveOrWrapper(Class<?> type) {
+        return type.isPrimitive() ||
+                type == Boolean.class ||
+                type == Byte.class ||
+                type == Character.class ||
+                type == Double.class ||
+                type == Float.class ||
+                type == Integer.class ||
+                type == Long.class ||
+                type == Short.class ||
+                type == String.class;
+    }
+
+    private boolean isCollectionOrMap(Class<?> type) {
+        return Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
     }
 }

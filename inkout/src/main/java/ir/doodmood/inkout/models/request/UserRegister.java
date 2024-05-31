@@ -1,11 +1,13 @@
 package ir.doodmood.inkout.models.request;
 
+import ir.doodmood.mashtframework.annotation.gson.AllRequired;
 import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@AllRequired
 public class UserRegister {
     private String username;
     private String password;

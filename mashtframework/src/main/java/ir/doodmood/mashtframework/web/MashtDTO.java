@@ -64,22 +64,21 @@ public class MashtDTO {
         };
     }
 
-    public void sendResponse(Object res) throws IOException {
-        byte[] ret = new Gson().toJson(res).getBytes();
-        httpExchange.sendResponseHeaders(responseCode, ret.length);
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(ret);
-        os.close();
-        httpExchange.close();
+    public void sendResponse(Object res) {
+        sendResponse(responseCode, res);
     }
 
-    public void sendResponse(int responseCode, Object res) throws IOException {
-        byte[] ret = new Gson().toJson(res).getBytes();
-        httpExchange.sendResponseHeaders(responseCode, ret.length);
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(ret);
-        os.close();
-        httpExchange.close();
+    public void sendResponse(int responseCode, Object res) {
+        try {
+            byte[] ret = new Gson().toJson(res).getBytes();
+            httpExchange.sendResponseHeaders(responseCode, ret.length);
+            OutputStream os = httpExchange.getResponseBody();
+            os.write(ret);
+            os.close();
+            httpExchange.close();
+        } catch (IOException e) {
+            // nothing can be done
+        }
     }
 
     public void setHttpResponseHeader(String key, String value) {

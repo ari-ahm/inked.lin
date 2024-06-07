@@ -4,6 +4,11 @@ import ir.doodmood.inkout.models.User;
 import ir.doodmood.inkout.models.request.UserRegister;
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Repository;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -39,6 +44,19 @@ public class UserRepository {
         try (Session session = sessionFactory.openSession()) {
             return session.byId(User.class).load(id);
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public User getUser(String email) {
+        try (Session session = sessionFactory.openSession()) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<User> criteria = builder.createQuery(User.class);
+            Root<User> from = criteria.from(User.class);
+            criteria.select(from).where(builder.equal(from.get("email"), email));
+            TypedQuery<User> query = session.createQuery(criteria);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
             return null;
         }
     }

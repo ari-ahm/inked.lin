@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+// TODO : handle responses when the correct function doesn't answer
+
 @Component
 class RequestHandler implements HttpHandler {
     private final HashMap<String, Method> methods = new HashMap<>();
@@ -98,11 +100,7 @@ class RequestHandler implements HttpHandler {
                         dto);
             } catch (InvocationTargetException e) {
                 logger.error("Invocation target exception: ", e.getCause());
-                try {
-                    dto.sendResponse(500, "Internal server error");
-                } catch (IOException ioException) {
-                    logger.error("IOException while sending back 500. something is wrong: ", ioException);
-                }
+                dto.sendResponse(500, "Internal server error");
             } catch (IllegalAccessException e) {
                 logger.error("IllegalAccessException(shouldn't be happening): ", e);
             }

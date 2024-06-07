@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Random;
 import java.util.random.RandomGenerator;
 
 @Component(singleton = true)
@@ -138,7 +139,7 @@ public class JWT {
 
     public String generateCSRFToken(int length) {
         byte[] ret = new byte[length];
-        RandomGenerator.getDefault().nextBytes(ret);
+        new Random().nextBytes(ret);
 
         return encodeHex(ret);
     }

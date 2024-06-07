@@ -2,8 +2,12 @@ package ir.doodmood.inkout.controllers;
 
 // TODO: implement CRUD and forgetPassword
 
+import ir.doodmood.inkout.Exception.AlreadyExistsException;
+import ir.doodmood.inkout.Exception.NotFoundException;
+import ir.doodmood.inkout.Exception.WrongPassException;
 import ir.doodmood.inkout.models.JwtAuth;
 import ir.doodmood.inkout.models.request.UserFind;
+import ir.doodmood.inkout.models.request.UserLogin;
 import ir.doodmood.inkout.models.request.UserRegister;
 import ir.doodmood.inkout.models.response.UserResponse;
 import ir.doodmood.inkout.services.UsersService;
@@ -34,19 +38,45 @@ public class Users {
     private void get(MashtDTO dto) {
         UserFind request = new UserFind();
         request.setId(Long.parseLong(dto.getPathVariables().get(0)));
-        UserResponse ur = usersService.find(request);
+        UserResponse ur;
+        try {
+            ur = usersService.find(request);
+        } catch (NotFoundException e) {
+            dto.sendResponse(404, "Not Found");
+            return;
+        }
         dto.sendResponse(ur);
     }
 
-//    @PostMapping("/login")
-//    private void login(MashtDTO dto) {
-//
-//    }
+    @PostMapping("/login")
+    private void login(MashtDTO dto) {
+        UserLogin request = (UserLogin) dto.getRequestBody(UserLogin.class);
+        if (request == null || (request.getUsername() == null && request.getEmail() == null)) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        try {
+            long id = usersService.checkPassword(request);
+            dto.setJWTToken(new JwtAuth(id));
+            dto.sendResponse(200, "ok");
+        } catch(NotFoundException e) {
+            dto.sendResponse(404, "Not Found");
+        } catch(WrongPassException e) {
+            dto.sendResponse(401, "Wrong Password");
+        }
+    }
 
     @PostMapping
     private void post(MashtDTO dto) {
         UserRegister request = (UserRegister) dto.getRequestBody(UserRegister.class);
-        UserResponse ur = usersService.register(request);
+        UserResponse ur;
+        try {
+            ur = usersService.register(request);
+        } catch (AlreadyExistsException e) {
+            dto.sendResponse(409, e.getMessage());
+            return;
+        }
         dto.sendResponse(ur);
     }
 }

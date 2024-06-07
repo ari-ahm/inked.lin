@@ -42,7 +42,7 @@ public class User {
         this.last_name = ur.getLast_name();
     }
 
-    public String getPasswordHash(String username, String password) {
+    public static String getPasswordHash(String username, String password) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             byte[] key = ((String) ((Config) ComponentFactory.factory(Config.class).getNew()).get("user_password_salt", String.class)).getBytes();

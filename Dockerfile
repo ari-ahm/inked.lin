@@ -15,7 +15,7 @@ COPY pom.xml .
 FROM base AS inkout-install
 WORKDIR /build
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw clean install -DskipTests
+    ./mvnw clean install -DskipTests -e -X
 
 
 FROM eclipse-temurin:17-jre-alpine AS inkout-target

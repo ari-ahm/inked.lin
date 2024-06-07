@@ -48,12 +48,25 @@ public class UserRepository {
         }
     }
 
-    public User getUser(String email) {
+    public User getUserByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<User> criteria = builder.createQuery(User.class);
             Root<User> from = criteria.from(User.class);
             criteria.select(from).where(builder.equal(from.get("email"), email));
+            TypedQuery<User> query = session.createQuery(criteria);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public User getUserByUsername(String username) {
+        try (Session session = sessionFactory.openSession()) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<User> criteria = builder.createQuery(User.class);
+            Root<User> from = criteria.from(User.class);
+            criteria.select(from).where(builder.equal(from.get("username"), username));
             TypedQuery<User> query = session.createQuery(criteria);
             return query.getSingleResult();
         } catch (NoResultException e) {

@@ -93,7 +93,7 @@ public class MashtDTO {
         if (domain != null) domainAttrib = "; Domain=" + domain;
         String pathAttrib = "";
         if (path != null) pathAttrib = "; Path=" + path;
-        httpExchange.getResponseHeaders().add("Set-Cookie", cookieName + "=" + payload + "; Secure" + ageAttrib + pathAttrib + domainAttrib);
+        httpExchange.getResponseHeaders().add("Set-Cookie", cookieName + "=" + payload + "; Secure; HttpOnly" + ageAttrib + pathAttrib + domainAttrib);
     }
 
     public void setJWTToken(Object payload, long lifetime, String path, String cookieName, String domain) {

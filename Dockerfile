@@ -24,3 +24,8 @@ WORKDIR /opt/app
 COPY --from=inkout-install /build/inkout/target/*-jar-with-dependencies.jar /opt/app/app.jar
 EXPOSE 3000
 CMD ["java", "-jar", "/opt/app/app.jar"]
+
+FROM nginx:1.27 AS inkedlin-nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+RUN mkdir /files
+EXPOSE 80

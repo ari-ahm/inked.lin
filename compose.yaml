@@ -13,6 +13,18 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+  nginx:
+    build:
+      context: .
+      target: inkedlin-nginx
+      dockerfile: Dockerfile
+    container_name: inkedlin-nginx
+    volumes:
+      - nginx-volume:/files
+    ports:
+      - 3000:80
+    depends_on:
+      - inkout
   inkout:
     build:
       context: .
@@ -22,8 +34,7 @@ services:
     container_name: inkedlin-inkout
     depends_on:
       - postgres
-    ports:
-      - 3000:3000
 
 volumes:
   postgres-volume:
+  nginx-volume:

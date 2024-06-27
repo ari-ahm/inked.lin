@@ -65,6 +65,15 @@ public class MashtDTO {
         sendResponse(responseCode, res);
     }
 
+    public void sendResponse(int responseCode) {
+        try {
+            httpExchange.sendResponseHeaders(responseCode, -1);
+            httpExchange.close();
+        } catch (IOException e) {
+            // nothing can be done.
+        }
+    }
+
     public void sendResponse(int responseCode, Object res) {
         try {
             byte[] ret = new Gson().toJson(res).getBytes();

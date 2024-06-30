@@ -13,9 +13,18 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
 
-        <property name="hbm2ddl.auto">create-drop</property>
+        <property name="hbm2ddl.auto">update</property>
 
+        <mapping class="ir.doodmood.inkout.models.GeoLocation"/>
+        <mapping class="ir.doodmood.inkout.models.Certificate"/>
+        <mapping class="ir.doodmood.inkout.models.Passion"/>
+        <mapping class="ir.doodmood.inkout.models.Skill"/>
+        <mapping class="ir.doodmood.inkout.models.JobPosition"/>
+        <mapping class="ir.doodmood.inkout.models.Institute"/>
         <mapping class="ir.doodmood.inkout.models.User"/>
-
+        <mapping class="ir.doodmood.inkout.models.Company"/>
+        <mapping class="ir.doodmood.inkout.models.ContactInfo"/>
+        <mapping class="ir.doodmood.inkout.models.Education"/>
+        <mapping class="ir.doodmood.inkout.models.Major"/>
     </session-factory>
 </hibernate-configuration>

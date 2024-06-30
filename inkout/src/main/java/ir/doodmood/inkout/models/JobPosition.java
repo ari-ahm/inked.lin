@@ -29,7 +29,6 @@ public class JobPosition {
     private PositionType positionType;
 
     @ManyToOne
-    @Column(nullable = false)
     private Company company;
     private WorkFromType workFromType;
     private boolean currentlyWorking;

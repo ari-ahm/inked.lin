@@ -26,10 +26,8 @@ public class Education {
     private long id;
 
     @ManyToOne
-    @Column(nullable = false)
     private Institute institute;
     @ManyToOne
-    @Column(nullable = false)
     private Major major;
     private boolean currentlyStudying;
     private LocalDate startDate;

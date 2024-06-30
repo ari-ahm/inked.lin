@@ -28,22 +28,15 @@ public class UsersService {
     }
 
     public UserResponse register(UserRegisterRequest ur) throws AlreadyExistsException {
-        if (userRepository.getUserByUsername(ur.getUsername()) != null)
-            throw new AlreadyExistsException("Username already exists");
         if (userRepository.getUserByEmail(ur.getEmail()) != null)
             throw new AlreadyExistsException("Email already exists");
         return new UserResponse(userRepository.addUser(ur));
     }
 
     public long checkPassword(UserLoginRequest ul) throws NotFoundException, WrongPassException {
-        User u;
-        if (ul.getEmail() == null) {
-            u = userRepository.getUserByUsername(ul.getUsername());
-        } else {
-            u = userRepository.getUserByEmail(ul.getEmail());
-        }
+        User u = userRepository.getUserByEmail(ul.getEmail());
         if (u == null) throw new NotFoundException();
-        if (!User.getPasswordHash(u.getUsername(), ul.getPassword()).equals(u.getPasswordHash())) throw new WrongPassException();
+        if (!User.getPasswordHash(u.getEmail(), ul.getPassword()).equals(u.getPasswordHash())) throw new WrongPassException();
         return u.getId();
     }
 }

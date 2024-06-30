@@ -46,7 +46,7 @@ public class Users {
     @PostMapping("/login")
     private void login(MashtDTO dto) {
         UserLoginRequest request = (UserLoginRequest) dto.getRequestBody(UserLoginRequest.class);
-        if (request == null || (request.getUsername() == null && request.getEmail() == null)) {
+        if (request == null || !request.validate()) {
             dto.sendResponse(400, "Bad Request");
             return;
         }

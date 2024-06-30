@@ -1,7 +1,7 @@
 package ir.doodmood.inkout.repositories;
 
 import ir.doodmood.inkout.models.User;
-import ir.doodmood.inkout.models.request.UserRegister;
+import ir.doodmood.inkout.models.request.UserRegisterRequest;
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Repository;
 import jakarta.persistence.NoResultException;
@@ -22,7 +22,7 @@ public class UserRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public User addUser(UserRegister user) {
+    public User addUser(UserRegisterRequest user) {
         User userDB = new User(user);
 
         Transaction transaction = null;

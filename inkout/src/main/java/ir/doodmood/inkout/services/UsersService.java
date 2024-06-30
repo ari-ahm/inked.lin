@@ -4,9 +4,9 @@ import ir.doodmood.inkout.Exception.AlreadyExistsException;
 import ir.doodmood.inkout.Exception.NotFoundException;
 import ir.doodmood.inkout.Exception.WrongPassException;
 import ir.doodmood.inkout.models.User;
-import ir.doodmood.inkout.models.request.UserFind;
-import ir.doodmood.inkout.models.request.UserLogin;
-import ir.doodmood.inkout.models.request.UserRegister;
+import ir.doodmood.inkout.models.request.UserFindRequest;
+import ir.doodmood.inkout.models.request.UserLoginRequest;
+import ir.doodmood.inkout.models.request.UserRegisterRequest;
 import ir.doodmood.inkout.models.response.UserResponse;
 import ir.doodmood.inkout.repositories.UserRepository;
 import ir.doodmood.mashtframework.annotation.Autowired;
@@ -21,13 +21,13 @@ public class UsersService {
         this.userRepository = userRepository;
     }
 
-    public UserResponse find(UserFind uf) throws NotFoundException {
+    public UserResponse find(UserFindRequest uf) throws NotFoundException {
         User u = userRepository.getUser(uf.getId());
         if (u == null) throw new NotFoundException();
         return new UserResponse(u);
     }
 
-    public UserResponse register(UserRegister ur) throws AlreadyExistsException {
+    public UserResponse register(UserRegisterRequest ur) throws AlreadyExistsException {
         if (userRepository.getUserByUsername(ur.getUsername()) != null)
             throw new AlreadyExistsException("Username already exists");
         if (userRepository.getUserByEmail(ur.getEmail()) != null)
@@ -35,7 +35,7 @@ public class UsersService {
         return new UserResponse(userRepository.addUser(ur));
     }
 
-    public long checkPassword(UserLogin ul) throws NotFoundException, WrongPassException {
+    public long checkPassword(UserLoginRequest ul) throws NotFoundException, WrongPassException {
         User u;
         if (ul.getEmail() == null) {
             u = userRepository.getUserByUsername(ul.getUsername());

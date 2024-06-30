@@ -1,19 +1,17 @@
 package ir.doodmood.inkout.models;
 
-import ir.doodmood.inkout.models.request.UserRegister;
+// TODO implement email verification and forgot password
+
+import ir.doodmood.inkout.models.request.UserRegisterRequest;
 import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Config;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
 
 @Entity
@@ -22,24 +20,48 @@ import java.util.Base64;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue
     private long id;
-    private String username;
     private String passwordHash;
     private String email;
-    private String phone;
     private String first_name;
     private String last_name;
+    private String bg_image;
+    private String additional_name;
+    private String profile_image;
+    private String bio;
 
-    public User(UserRegister ur) {
-        this.username = ur.getUsername();
-        this.passwordHash = getPasswordHash(ur.getUsername(), ur.getPassword());
+    @OneToMany
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private ArrayList<JobPosition> jobPositions;
+    @OneToMany
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private ArrayList<Education> education;
+    @ManyToOne
+    private GeoLocation location;
+    @ManyToOne
+    private Passion passion;
+    @OneToOne
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private ContactInfo contact;
+    @OneToMany
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private ArrayList<Certificate> certificates;
+    @ManyToMany
+    private ArrayList<Skill> skills;
+
+    public User(UserRegisterRequest ur) {
+        this.passwordHash = getPasswordHash(ur.getEmail(), ur.getPassword());
         this.email = ur.getEmail();
-        this.phone = ur.getPhone();
         this.first_name = ur.getFirst_name();
         this.last_name = ur.getLast_name();
+        this.location = GeoLocation.builder().id(ur.getLocation()).build();
+        this.passion = Passion.builder().id(ur.getPassion()).build();
+        this.contact = new ContactInfo();
+        this.additional_name = ur.getAdditional_name();
     }
 
     public static String getPasswordHash(String username, String password) {

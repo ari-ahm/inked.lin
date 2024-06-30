@@ -6,22 +6,17 @@ import ir.doodmood.inkout.Exception.AlreadyExistsException;
 import ir.doodmood.inkout.Exception.NotFoundException;
 import ir.doodmood.inkout.Exception.WrongPassException;
 import ir.doodmood.inkout.models.JwtAuth;
-import ir.doodmood.inkout.models.request.UserFind;
-import ir.doodmood.inkout.models.request.UserLogin;
-import ir.doodmood.inkout.models.request.UserRegister;
+import ir.doodmood.inkout.models.request.UserFindRequest;
+import ir.doodmood.inkout.models.request.UserLoginRequest;
+import ir.doodmood.inkout.models.request.UserRegisterRequest;
 import ir.doodmood.inkout.models.response.UserResponse;
 import ir.doodmood.inkout.services.UsersService;
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.http.GetMapping;
 import ir.doodmood.mashtframework.annotation.http.PostMapping;
-import ir.doodmood.mashtframework.annotation.http.PutMapping;
 import ir.doodmood.mashtframework.annotation.http.RestController;
 import ir.doodmood.mashtframework.core.Logger;
-import ir.doodmood.mashtframework.exception.JWTTokenExpiredException;
-import ir.doodmood.mashtframework.exception.JWTVerificationFailedException;
 import ir.doodmood.mashtframework.web.MashtDTO;
-
-import java.util.NoSuchElementException;
 
 @RestController("/users")
 public class Users {
@@ -36,7 +31,7 @@ public class Users {
 
     @GetMapping("/{}")
     private void get(MashtDTO dto) {
-        UserFind request = new UserFind();
+        UserFindRequest request = new UserFindRequest();
         request.setId(Long.parseLong(dto.getPathVariables().get(0)));
         UserResponse ur;
         try {
@@ -50,7 +45,7 @@ public class Users {
 
     @PostMapping("/login")
     private void login(MashtDTO dto) {
-        UserLogin request = (UserLogin) dto.getRequestBody(UserLogin.class);
+        UserLoginRequest request = (UserLoginRequest) dto.getRequestBody(UserLoginRequest.class);
         if (request == null || (request.getUsername() == null && request.getEmail() == null)) {
             dto.sendResponse(400, "Bad Request");
             return;
@@ -69,7 +64,7 @@ public class Users {
 
     @PostMapping
     private void post(MashtDTO dto) {
-        UserRegister request = (UserRegister) dto.getRequestBody(UserRegister.class);
+        UserRegisterRequest request = (UserRegisterRequest) dto.getRequestBody(UserRegisterRequest.class);
         UserResponse ur;
         try {
             ur = usersService.register(request);

@@ -1,6 +1,6 @@
 package ir.doodmood.inkout.models.request;
 
-import ir.doodmood.mashtframework.annotation.gson.Required;
+import ir.doodmood.mashtframework.annotation.gson.AllRequired;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,9 +10,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLogin {
-    private String email;
-    private String username;
-    @Required
-    private String password;
+@AllRequired
+public class UserFindRequest extends BasicRequest {
+    private long id;
+    public boolean validate() {
+        return true;
+    }
 }

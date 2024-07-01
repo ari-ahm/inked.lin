@@ -11,9 +11,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @AllRequired
-public class UserFindRequest extends BasicRequest {
-    private Long id;
+public class UserSearchRequest extends BasicRequest {
+    private String first_name;
+    private String last_name;
+    private String additional_name;
+
     public boolean validate() {
-        return id != null;
+        return true;
     }
 }

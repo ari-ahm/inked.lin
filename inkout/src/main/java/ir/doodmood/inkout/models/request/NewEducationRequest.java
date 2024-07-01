@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @AllRequired
 public class NewEducationRequest extends BasicRequest {
-    private long institute;
+    private Long institute;
     private String major;
     private boolean currentlyStudying;
     private LocalDate startDate;

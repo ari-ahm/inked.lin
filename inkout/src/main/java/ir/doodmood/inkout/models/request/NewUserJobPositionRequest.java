@@ -17,7 +17,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @AllRequired
 public class NewUserJobPositionRequest extends BasicRequest {
-    private long user;
+    private Long user;
     private String title;
     private PositionType positionType;
     private String company;

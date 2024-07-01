@@ -1,19 +1,20 @@
 package ir.doodmood.inkout.controllers;
 
 // TODO: implement CRUD and forgetPassword
+// TODO implement access modifiers to contact info
 
 import ir.doodmood.inkout.Exception.AlreadyExistsException;
 import ir.doodmood.inkout.Exception.NotFoundException;
 import ir.doodmood.inkout.Exception.WrongPassException;
 import ir.doodmood.inkout.models.JwtAuth;
+import ir.doodmood.inkout.models.User;
 import ir.doodmood.inkout.models.request.*;
 import ir.doodmood.inkout.models.response.UserResponse;
 import ir.doodmood.inkout.services.UsersService;
 import ir.doodmood.mashtframework.annotation.Autowired;
-import ir.doodmood.mashtframework.annotation.http.GetMapping;
-import ir.doodmood.mashtframework.annotation.http.PostMapping;
-import ir.doodmood.mashtframework.annotation.http.RestController;
+import ir.doodmood.mashtframework.annotation.http.*;
 import ir.doodmood.mashtframework.web.MashtDTO;
+import org.hibernate.Remove;
 
 @RestController("/users")
 public class UsersController {
@@ -28,14 +29,14 @@ public class UsersController {
     private void get(MashtDTO dto) {
         UserFindRequest request = new UserFindRequest();
         request.setId(Long.parseLong(dto.getPathVariables().get(0)));
-        UserResponse ur;
+        User u;
         try {
-            ur = usersService.find(request);
+            u = usersService.find(request);
         } catch (NotFoundException e) {
             dto.sendResponse(404, "Not Found");
             return;
         }
-        dto.sendResponse(ur);
+        dto.sendResponse(new UserResponse(u));
     }
 
     @PostMapping("/login")
@@ -65,14 +66,47 @@ public class UsersController {
             return;
         }
 
-        UserResponse ur;
+        User u;
         try {
-            ur = usersService.register(request);
+            u = usersService.register(request);
         } catch (AlreadyExistsException e) {
             dto.sendResponse(409, e.getMessage());
             return;
         }
-        dto.sendResponse(ur);
+        dto.sendResponse(new UserResponse(u));
+    }
+
+    @DeleteMapping
+    private void delete(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        usersService.removeUser(jwtAuth.getId());
+        dto.sendResponse(200, "OK");
+    }
+
+    @PutMapping
+    private void put(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        UserRegisterRequest request = (UserRegisterRequest) dto.getRequestBody(UserRegisterRequest.class);
+        if (request == null || !request.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        dto.sendResponse(new UserResponse(usersService.update(request, jwtAuth.getId())));
     }
 
     @PostMapping("/certificates")
@@ -91,7 +125,26 @@ public class UsersController {
             return;
         }
 
-        usersService.addCertificate(ncr, jwtAuth.getId());
+        dto.sendResponse(new UserResponse(usersService.addCertificate(ncr, jwtAuth.getId())));
+    }
+
+    @DeleteMapping("/certificates")
+    private void remCert(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        RemoveCertificateRequest rcr = (RemoveCertificateRequest) dto.getRequestBody(RemoveCertificateRequest.class);
+        if (rcr == null || !rcr.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        dto.sendResponse(new UserResponse(usersService.removeCertificate(rcr, jwtAuth.getId())));
     }
 
     @PostMapping("/education")
@@ -110,7 +163,26 @@ public class UsersController {
             return;
         }
 
-        usersService.addEducation(ner, jwtAuth.getId());
+        dto.sendResponse(new UserResponse(usersService.addEducation(ner, jwtAuth.getId())));
+    }
+
+    @DeleteMapping("/education")
+    private void remEdu(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        RemoveEducationRequest rer = (RemoveEducationRequest) dto.getRequestBody(RemoveEducationRequest.class);
+        if (rer == null || !rer.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        dto.sendResponse(new UserResponse(usersService.removeEducation(rer, jwtAuth.getId())));
     }
 
     @PostMapping("/positions")
@@ -129,8 +201,92 @@ public class UsersController {
             return;
         }
 
-        usersService.addJobPos(nujpr, jwtAuth.getId());
+        dto.sendResponse(new UserResponse(usersService.addJobPos(nujpr, jwtAuth.getId())));
+    }
+
+    @DeleteMapping("/positions")
+    private void remJobPos(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        RemoveJobPositionRequest rjpr = (RemoveJobPositionRequest) dto.getRequestBody(RemoveJobPositionRequest.class);
+        if (rjpr == null || !rjpr.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        dto.sendResponse(new UserResponse(usersService.removeJobPos(rjpr, jwtAuth.getId())));
+    }
+
+    @PostMapping("/skills")
+    private void addSkill(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        AddSkill2UserRequest as2ur = (AddSkill2UserRequest) dto.getRequestBody(AddSkill2UserRequest.class);
+        if (as2ur == null || !as2ur.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        dto.sendResponse(new UserResponse(usersService.addSkill(as2ur, jwtAuth.getId())));
+    }
+
+    @DeleteMapping("/skills")
+    private void remSkill(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        RemoveSkillRequest rsr = (RemoveSkillRequest) dto.getRequestBody(RemoveSkillRequest.class);
+        if (rsr == null || !rsr.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        dto.sendResponse(new UserResponse(usersService.removeSkill(rsr, jwtAuth.getId())));
+    }
+
+    @PostMapping("/contact")
+    private void setContactInfo(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        SetContactInfoRequest scir = (SetContactInfoRequest) dto.getRequestBody(SetContactInfoRequest.class);
+        if (scir == null || !scir.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        dto.sendResponse(new UserResponse(usersService.setContactInfo(scir, jwtAuth.getId())));
     }
 
 
+    @GetMapping("/search") // TODO
+    private void search(MashtDTO dto) {
+        UserSearchRequest scir = (UserSearchRequest) dto.getRequestBody(UserSearchRequest.class);
+        if (scir == null || !scir.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+    }
 }

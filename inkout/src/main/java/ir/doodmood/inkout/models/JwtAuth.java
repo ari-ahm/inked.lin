@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JwtAuth {
-    private long id;
+    private Long id;
 }

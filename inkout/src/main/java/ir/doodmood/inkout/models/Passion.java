@@ -1,5 +1,7 @@
 package ir.doodmood.inkout.models;
 
+// TODO search
+
 import ir.doodmood.inkout.models.request.NewPassionRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 @AllRequired
 public class NewCertificateRequest extends BasicRequest {
     private String title;
-    private long institute;
+    private Long institute;
     private LocalDate issuedDate;
     @Optional
     private LocalDate expiresDate;

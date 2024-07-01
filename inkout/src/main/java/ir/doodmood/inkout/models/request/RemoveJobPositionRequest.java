@@ -11,9 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @AllRequired
-public class UserFindRequest extends BasicRequest {
+public class RemoveJobPositionRequest extends BasicRequest {
     private Long id;
+
     public boolean validate() {
-        return id != null;
+        return true;
     }
 }

@@ -60,7 +60,8 @@ public class User {
         this.first_name = ur.getFirst_name();
         this.last_name = ur.getLast_name();
         this.location = GeoLocation.builder().id(ur.getLocation()).build();
-        this.passion = Passion.builder().id(ur.getPassion()).build();
+        if (ur.getPassion() != null)
+            this.passion = Passion.builder().id(ur.getPassion()).build();
         this.contact = new ContactInfo();
         this.additional_name = ur.getAdditional_name();
         this.goal = ur.getGoal();

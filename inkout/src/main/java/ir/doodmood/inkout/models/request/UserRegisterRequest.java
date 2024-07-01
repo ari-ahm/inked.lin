@@ -25,8 +25,9 @@ public class UserRegisterRequest extends BasicRequest {
     @Optional
     private String profile_image;
     private String bio;
-    private long location;
-    private long passion;
+    private Long location;
+    @Optional
+    private Long passion;
 
     private static Pattern emailPattern;
     public static Pattern getEmailPattern() { // TODO move this function to a util class.

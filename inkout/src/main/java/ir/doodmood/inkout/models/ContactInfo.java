@@ -1,5 +1,6 @@
 package ir.doodmood.inkout.models;
 
+import ir.doodmood.inkout.models.request.SetContactInfoRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,4 +25,14 @@ public class ContactInfo {
     private LocalDate dateOfBirth;
     private ShowPolicy dobShowPolicy;
     private String instantContact;
+
+    public ContactInfo(SetContactInfoRequest setContactInfoRequest, User u) {
+        this.phone = setContactInfoRequest.getPhone();
+        this.phoneType = setContactInfoRequest.getPhoneType();
+        this.address = setContactInfoRequest.getAddress();
+        this.dateOfBirth = setContactInfoRequest.getDateOfBirth();
+        this.dobShowPolicy = setContactInfoRequest.getDobShowPolicy();
+        this.instantContact = setContactInfoRequest.getInstantContact();
+        this.user = u;
+    }
 }

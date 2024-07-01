@@ -49,14 +49,21 @@ public class UserRepository {
 
     public User getUserByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<User> criteria = builder.createQuery(User.class);
-            Root<User> from = criteria.from(User.class);
-            criteria.select(from).where(builder.equal(from.get("email"), email));
-            TypedQuery<User> query = session.createQuery(criteria);
-            return query.getSingleResult();
+            return (User) session.createQuery("FROM User u WHERE u.id = :userId").setParameter("userId", email).getSingleResult();
         } catch (NoResultException e) {
             return null;
+        }
+    }
+
+    public void removeUserById(long id) {
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            session.remove(getUser(id));
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null)
+                transaction.rollback();
         }
     }
 }

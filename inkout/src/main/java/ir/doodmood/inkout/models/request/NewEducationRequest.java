@@ -17,7 +17,7 @@ import java.util.ArrayList;
 @AllRequired
 public class NewEducationRequest extends BasicRequest {
     private long institute;
-    private long major;
+    private String major;
     private boolean currentlyStudying;
     private LocalDate startDate;
     @Optional
@@ -32,6 +32,7 @@ public class NewEducationRequest extends BasicRequest {
                 description.length() > 1000 ||
                 grade.length() > 5 ||
                 activities.length() > 500 ||
+                major.length() > 40 ||
                 skills.size() > 5)
             return false;
 

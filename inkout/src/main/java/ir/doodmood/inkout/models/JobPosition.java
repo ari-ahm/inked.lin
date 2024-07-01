@@ -28,8 +28,8 @@ public class JobPosition {
     private String title;
     private PositionType positionType;
 
-    @ManyToOne
-    private Company company;
+    private String company;
+    private String address;
     private WorkFromType workFromType;
     private boolean currentlyWorking;
     private LocalDate startDate;
@@ -42,7 +42,8 @@ public class JobPosition {
         this.user = User.builder().id(userId).build();
         this.title = nujpr.getTitle();
         this.positionType = nujpr.getPositionType();
-        this.company = Company.builder().id(nujpr.getCompany()).build();
+        this.company = nujpr.getCompany();
+        this.address = nujpr.getAddress();
         this.workFromType = nujpr.getWorkFromType();
         this.startDate = nujpr.getStartDate();
         this.finishDate = nujpr.getFinishDate();

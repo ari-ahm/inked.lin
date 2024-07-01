@@ -20,7 +20,8 @@ public class NewUserJobPositionRequest extends BasicRequest {
     private long user;
     private String title;
     private PositionType positionType;
-    private long company;
+    private String company;
+    private String address;
     private WorkFromType workFromType;
     private boolean currentlyWorking;
     private LocalDate startDate;
@@ -33,6 +34,8 @@ public class NewUserJobPositionRequest extends BasicRequest {
         if ((finishDate == null && !currentlyWorking) ||
                 (title.length() > 40) ||
                 (description.length() > 1000) ||
+                company.length() > 40 ||
+                address.length() > 40 ||
                 (skills.size() > 5))
                 return false;
 

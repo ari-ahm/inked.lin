@@ -1,5 +1,6 @@
 package ir.doodmood.inkout.models.request;
 
+import ir.doodmood.inkout.models.UserGoal;
 import ir.doodmood.mashtframework.annotation.gson.AllRequired;
 import ir.doodmood.mashtframework.annotation.gson.Optional;
 import lombok.*;
@@ -17,6 +18,7 @@ public class UserRegisterRequest extends BasicRequest {
     private String email;
     private String first_name;
     private String last_name;
+    private UserGoal goal;
     @Optional
     private String bg_image;
     private String additional_name;

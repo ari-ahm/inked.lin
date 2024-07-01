@@ -27,8 +27,7 @@ public class Education {
 
     @ManyToOne
     private Institute institute;
-    @ManyToOne
-    private Major major;
+    private String major;
     private boolean currentlyStudying;
     private LocalDate startDate;
     private LocalDate finishDate;
@@ -41,7 +40,7 @@ public class Education {
     public Education(NewEducationRequest ner, long userId) {
         this.user = User.builder().id(userId).build();
         this.institute = Institute.builder().id(ner.getInstitute()).build();
-        this.major = Major.builder().id(ner.getMajor()).build();
+        this.major = ner.getMajor();
         this.currentlyStudying = ner.isCurrentlyStudying();
         this.startDate = ner.getStartDate();
         this.finishDate = ner.getFinishDate();

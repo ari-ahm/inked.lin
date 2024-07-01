@@ -33,6 +33,7 @@ public class User {
     private String additional_name;
     private String profile_image;
     private String bio;
+    private UserGoal goal;
 
     @OneToMany
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -62,6 +63,7 @@ public class User {
         this.passion = Passion.builder().id(ur.getPassion()).build();
         this.contact = new ContactInfo();
         this.additional_name = ur.getAdditional_name();
+        this.goal = ur.getGoal();
     }
 
     public static String getPasswordHash(String username, String password) {

@@ -31,6 +31,7 @@ public class UserRepository {
             session.save(user);
             transaction.commit();
         } catch (Exception e) {
+            e.printStackTrace();
             if (transaction != null)
                 transaction.rollback();
             return null;
@@ -49,7 +50,7 @@ public class UserRepository {
 
     public User getUserByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
-            return (User) session.createQuery("FROM User u WHERE u.id = :userId").setParameter("userId", email).getSingleResult();
+            return (User) session.createQuery("FROM User u WHERE u.email = :userId").setParameter("userId", email).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }

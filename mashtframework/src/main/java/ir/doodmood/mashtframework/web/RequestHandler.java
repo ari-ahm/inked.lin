@@ -100,6 +100,7 @@ class RequestHandler implements HttpHandler {
                         dto);
             } catch (InvocationTargetException e) {
                 logger.error("Invocation target exception: ", e.getCause());
+                e.getCause().printStackTrace();
                 dto.sendResponse(500, "Internal server error");
             } catch (IllegalAccessException e) {
                 logger.error("IllegalAccessException(shouldn't be happening): ", e);

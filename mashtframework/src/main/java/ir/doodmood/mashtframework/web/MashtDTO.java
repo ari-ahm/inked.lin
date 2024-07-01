@@ -189,7 +189,7 @@ public class MashtDTO {
                 return false;
             }
 
-            if (!isPrimitiveOrWrapper(field.getType()) && !isCollectionOrMap(field.getType())) {
+            if (!isPrimitiveOrWrapperOrEnum(field.getType()) && !isCollectionOrMap(field.getType())) {
                 if (!validateObject(value)) {
                     return false;
                 }
@@ -217,8 +217,9 @@ public class MashtDTO {
         return true;
     }
 
-    private boolean isPrimitiveOrWrapper(Class<?> type) {
+    private boolean isPrimitiveOrWrapperOrEnum(Class<?> type) {
         return type.isPrimitive() ||
+                type.isEnum() ||
                 type == Boolean.class ||
                 type == Byte.class ||
                 type == Character.class ||

@@ -23,7 +23,7 @@ import java.util.Base64;
 @Builder
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String passwordHash;
     private String email;
@@ -53,6 +53,20 @@ public class User {
     private ArrayList<Certificate> certificates;
     @ManyToMany
     private ArrayList<Skill> skills;
+    @ManyToMany(mappedBy = "followers")
+    private ArrayList<User> following;
+    @ManyToMany
+    @JoinTable(name = "followings")
+    private ArrayList<User> followers;
+    @ManyToMany(mappedBy = "incomingConnectionRequests")
+    private ArrayList<User> outGoingConnectionRequests;
+    @ManyToMany
+    @JoinTable(name = "connection_requests")
+    private ArrayList<User> incomingConnectionRequests;
+    @ManyToMany
+    @JoinTable(name = "connections")
+    private ArrayList<User> connections;
+
 
     public User(UserRegisterRequest ur) {
         this.passwordHash = getPasswordHash(ur.getEmail(), ur.getPassword());
@@ -62,7 +76,7 @@ public class User {
         this.location = GeoLocation.builder().id(ur.getLocation()).build();
         if (ur.getPassion() != null)
             this.passion = Passion.builder().id(ur.getPassion()).build();
-        this.contact = new ContactInfo();
+        this.contact = ContactInfo.builder().user(this).build();
         this.additional_name = ur.getAdditional_name();
         this.goal = ur.getGoal();
     }

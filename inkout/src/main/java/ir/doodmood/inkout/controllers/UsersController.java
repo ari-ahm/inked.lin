@@ -61,7 +61,7 @@ public class UsersController {
     @PostMapping
     private void post(MashtDTO dto) {
         UserRegisterRequest request = (UserRegisterRequest) dto.getRequestBody(UserRegisterRequest.class);
-        if (request == null || !request.validate()) {
+        if (request == null/* || !request.validate()*/) {
             dto.sendResponse(400, "Bad Request");
             return;
         }

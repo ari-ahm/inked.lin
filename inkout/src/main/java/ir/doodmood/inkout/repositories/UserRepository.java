@@ -22,14 +22,13 @@ public class UserRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public User addUser(UserRegisterRequest user) {
-        User userDB = new User(user);
+    public User saveUser(User user) {
 
         Transaction transaction = null;
 
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.save(userDB);
+            session.save(user);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null)
@@ -37,7 +36,7 @@ public class UserRepository {
             return null;
         }
 
-        return userDB;
+        return user;
     }
 
     public User getUser(long id) {

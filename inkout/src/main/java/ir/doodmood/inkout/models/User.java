@@ -3,6 +3,7 @@ package ir.doodmood.inkout.models;
 // TODO implement email verification and forgot password
 
 import ir.doodmood.inkout.models.request.UserRegisterRequest;
+import ir.doodmood.inkout.repositories.ProxiesRepository;
 import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Config;
 import jakarta.persistence.*;
@@ -66,17 +67,22 @@ public class User {
     @ManyToMany
     @JoinTable(name = "connections")
     private ArrayList<User> connections;
+    @OneToMany
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private ArrayList<Post> posts;
+    @ManyToMany
+    private ArrayList<Post> liked;
 
 
-    public User(UserRegisterRequest ur) {
+    public User(UserRegisterRequest ur, ProxiesRepository pr) {
         this.passwordHash = getPasswordHash(ur.getEmail(), ur.getPassword());
         this.email = ur.getEmail();
         this.first_name = ur.getFirst_name();
         this.last_name = ur.getLast_name();
-        this.location = GeoLocation.builder().id(ur.getLocation()).build();
+        this.location = pr.getProxy(GeoLocation.class, ur.getLocation());
         if (ur.getPassion() != null)
-            this.passion = Passion.builder().id(ur.getPassion()).build();
-        this.contact = ContactInfo.builder().user(this).build();
+            this.passion = pr.getProxy(Passion.class, ur.getPassion());
+        this.contact = pr.save(ContactInfo.builder().user(this).build());
         this.additional_name = ur.getAdditional_name();
         this.goal = ur.getGoal();
     }

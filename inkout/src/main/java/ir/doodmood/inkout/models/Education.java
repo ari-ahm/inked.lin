@@ -4,6 +4,7 @@ package ir.doodmood.inkout.models;
 // and what is profile change notification(implement it)
 
 import ir.doodmood.inkout.models.request.NewEducationRequest;
+import ir.doodmood.inkout.repositories.ProxiesRepository;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,9 +38,9 @@ public class Education {
     @ManyToMany
     private ArrayList<Skill> skills;
 
-    public Education(NewEducationRequest ner, long userId) {
-        this.user = User.builder().id(userId).build();
-        this.institute = Institute.builder().id(ner.getInstitute()).build();
+    public Education(NewEducationRequest ner, User user, ProxiesRepository pr) {
+        this.user = user;
+        this.institute = pr.getProxy(Institute.class, ner.getInstitute());
         this.major = ner.getMajor();
         this.currentlyStudying = ner.isCurrentlyStudying();
         this.startDate = ner.getStartDate();
@@ -49,6 +50,6 @@ public class Education {
         this.activities = ner.getActivities();
         this.skills = new ArrayList<>();
         for (long i : ner.getSkills())
-            this.skills.add(Skill.builder().id(i).build());
+            this.skills.add(pr.getProxy(Skill.class, i));
     }
 }

@@ -5,6 +5,7 @@ import ir.doodmood.inkout.Exception.NotFoundException;
 import ir.doodmood.inkout.Exception.WrongPassException;
 import ir.doodmood.inkout.models.*;
 import ir.doodmood.inkout.models.request.*;
+import ir.doodmood.inkout.repositories.ProxiesRepository;
 import ir.doodmood.inkout.repositories.UserRepository;
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Service;
@@ -12,10 +13,12 @@ import ir.doodmood.mashtframework.annotation.Service;
 @Service
 public class UsersService {
     private final UserRepository userRepository;
+    private final ProxiesRepository proxiesRepository;
 
     @Autowired
-    public UsersService(UserRepository userRepository) {
+    public UsersService(UserRepository userRepository, ProxiesRepository proxiesRepository) {
         this.userRepository = userRepository;
+        this.proxiesRepository = proxiesRepository;
     }
 
     public User find(UserFindRequest uf) throws NotFoundException {
@@ -27,7 +30,7 @@ public class UsersService {
     public User register(UserRegisterRequest ur) throws AlreadyExistsException {
         if (userRepository.getUserByEmail(ur.getEmail()) != null)
             throw new AlreadyExistsException("Email already exists");
-        return userRepository.saveUser(new User(ur));
+        return userRepository.saveUser(new User(ur, proxiesRepository));
     }
 
     public long checkPassword(UserLoginRequest ul) throws NotFoundException, WrongPassException {
@@ -39,7 +42,7 @@ public class UsersService {
 
     public User addCertificate(NewCertificateRequest ncr, long id) {
         User u = userRepository.getUser(id);
-        u.getCertificates().add(new Certificate(ncr, id));
+        u.getCertificates().add(proxiesRepository.save(new Certificate(ncr, u, proxiesRepository)));
         userRepository.saveUser(u);
         return u;
     }
@@ -58,7 +61,7 @@ public class UsersService {
 
     public User addEducation(NewEducationRequest ner, long id) {
         User u = userRepository.getUser(id);
-        u.getEducation().add(new Education(ner, id));
+        u.getEducation().add(proxiesRepository.save(new Education(ner, u, proxiesRepository)));
         userRepository.saveUser(u);
         return u;
     }
@@ -77,7 +80,7 @@ public class UsersService {
 
     public User addJobPos(NewUserJobPositionRequest nujpr, long id) {
         User u = userRepository.getUser(id);
-        u.getJobPositions().add(new JobPosition(nujpr, id));
+        u.getJobPositions().add(proxiesRepository.save(new JobPosition(nujpr, u, proxiesRepository)));
         userRepository.saveUser(u);
         return u;
     }
@@ -96,7 +99,7 @@ public class UsersService {
 
     public User addSkill(AddSkill2UserRequest as2ur, long id) {
         User u = userRepository.getUser(id);
-        u.getSkills().add(Skill.builder().id(as2ur.getSkill()).build());
+        u.getSkills().add(proxiesRepository.getProxy(Skill.class, as2ur.getSkill()));
         userRepository.saveUser(u);
         return u;
     }
@@ -115,13 +118,13 @@ public class UsersService {
 
     public User setContactInfo(SetContactInfoRequest scir, long id) {
         User u = userRepository.getUser(id);
-        u.setContact(new ContactInfo(scir, u));
+        u.setContact(proxiesRepository.save(new ContactInfo(scir, u)));
         userRepository.saveUser(u);
         return u;
     }
 
     public User update(UserRegisterRequest ur, long id) { // TODO handle email change
-        User u = new User(ur);
+        User u = new User(ur, proxiesRepository);
         u.setId(id);
         userRepository.saveUser(u);
         return u;
@@ -129,5 +132,11 @@ public class UsersService {
 
     public void removeUser(long id) {
         userRepository.removeUserById(id);
+    }
+
+    public void post(NewPostRequest npr, long id) {
+        User u = userRepository.getUser(id);
+        u.getPosts().add(proxiesRepository.save(new Post(npr, u)));
+        userRepository.saveUser(u);
     }
 }

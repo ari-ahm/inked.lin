@@ -4,6 +4,7 @@ package ir.doodmood.inkout.models;
 // and what is profile change notification(implement it)
 
 import ir.doodmood.inkout.models.request.NewUserJobPositionRequest;
+import ir.doodmood.inkout.repositories.ProxiesRepository;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,8 +39,8 @@ public class JobPosition {
     @ManyToMany
     private ArrayList<Skill> skills;
 
-    public JobPosition(NewUserJobPositionRequest nujpr, long userId) {
-        this.user = User.builder().id(userId).build();
+    public JobPosition(NewUserJobPositionRequest nujpr, User user, ProxiesRepository pr) {
+        this.user = user;
         this.title = nujpr.getTitle();
         this.positionType = nujpr.getPositionType();
         this.company = nujpr.getCompany();
@@ -51,6 +52,6 @@ public class JobPosition {
         this.currentlyWorking = nujpr.isCurrentlyWorking();
         this.skills = new ArrayList<>();
         for (long i : nujpr.getSkills())
-            this.skills.add(Skill.builder().id(i).build());
+            this.skills.add(pr.getProxy(Skill.class, i));
     }
 }

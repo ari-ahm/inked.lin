@@ -1,6 +1,7 @@
 package ir.doodmood.inkout.models;
 
 import ir.doodmood.inkout.models.request.NewCertificateRequest;
+import ir.doodmood.inkout.repositories.ProxiesRepository;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,16 +32,16 @@ public class Certificate {
     @ManyToMany
     private ArrayList<Skill> skills;
 
-    public Certificate(NewCertificateRequest ncr, long userId) {
-        this.user = User.builder().id(userId).build();
+    public Certificate(NewCertificateRequest ncr, User u, ProxiesRepository pr) {
+        this.user = u;
         this.title = ncr.getTitle();
-        this.institute = Institute.builder().id(ncr.getInstitute()).build();
+        this.institute = pr.getProxy(Institute.class, ncr.getInstitute());
         this.issuedDate = ncr.getIssuedDate();
         this.expiresDate = ncr.getExpiresDate();
         this.validityCheck = ncr.getValidityCheck();
         this.website = ncr.getWebsite();
         this.skills = new ArrayList<>();
         for (long i : ncr.getSkills())
-            this.skills.add(Skill.builder().id(i).build());
+            this.skills.add(pr.getProxy(Skill.class, i));
     }
 }

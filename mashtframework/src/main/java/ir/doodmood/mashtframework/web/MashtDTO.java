@@ -92,7 +92,7 @@ public class MashtDTO {
     }
 
     public List<String> getHttpRequestHeader(String key) {
-        return httpExchange.getResponseHeaders().get(key);
+        return httpExchange.getRequestHeaders().get(key);
     }
 
     public void setCookie(String payload, long lifetime, String path, String cookieName, String domain) {

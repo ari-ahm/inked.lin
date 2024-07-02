@@ -72,6 +72,8 @@ public class User {
     private ArrayList<Post> posts;
     @ManyToMany
     private ArrayList<Post> liked;
+    @OneToMany
+    private ArrayList<Comment> comments;
 
 
     public User(UserRegisterRequest ur, ProxiesRepository pr) {

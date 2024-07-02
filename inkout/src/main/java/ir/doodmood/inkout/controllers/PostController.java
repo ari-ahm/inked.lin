@@ -3,9 +3,11 @@ package ir.doodmood.inkout.controllers;
 // TODO implement search
 
 import ir.doodmood.inkout.models.JwtAuth;
+import ir.doodmood.inkout.models.request.NewCommentRequest;
 import ir.doodmood.inkout.models.request.NewPostRequest;
 import ir.doodmood.inkout.services.UsersService;
 import ir.doodmood.mashtframework.annotation.Autowired;
+import ir.doodmood.mashtframework.annotation.http.GetMapping;
 import ir.doodmood.mashtframework.annotation.http.PostMapping;
 import ir.doodmood.mashtframework.annotation.http.RestController;
 import ir.doodmood.mashtframework.web.MashtDTO;
@@ -36,5 +38,30 @@ public class PostController {
 
         usersService.post(request, jwtAuth.getId());
         dto.sendResponse(200, "OK");
+    }
+
+    @PostMapping("/comments")
+    private void comment(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        NewCommentRequest request = (NewCommentRequest) dto.getRequestBody(NewCommentRequest.class);
+        if (request == null || !request.validate()) {
+            dto.sendResponse(400, "Bad Request");
+            return;
+        }
+
+        usersService.comment(request, jwtAuth.getId());
+        dto.sendResponse(200, "OK");
+    }
+
+    @GetMapping
+    private void get(MashtDTO dto) {
+        // TODO.
     }
 }

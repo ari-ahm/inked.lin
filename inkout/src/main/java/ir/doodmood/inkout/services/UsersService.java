@@ -139,4 +139,8 @@ public class UsersService {
         u.getPosts().add(proxiesRepository.save(new Post(npr, u)));
         userRepository.saveUser(u);
     }
+
+    public void comment(NewCommentRequest npr, long id) {
+        proxiesRepository.save(new Comment(npr, proxiesRepository.getProxy(User.class, id), proxiesRepository));
+    }
 }

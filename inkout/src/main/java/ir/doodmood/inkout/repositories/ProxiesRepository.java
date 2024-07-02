@@ -1,9 +1,7 @@
 package ir.doodmood.inkout.repositories;
 
-import ir.doodmood.inkout.models.User;
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Repository;
-import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;

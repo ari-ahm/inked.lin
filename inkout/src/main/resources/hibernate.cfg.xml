@@ -26,5 +26,6 @@
         <mapping class="ir.doodmood.inkout.models.ContactInfo"/>
         <mapping class="ir.doodmood.inkout.models.Education"/>
         <mapping class="ir.doodmood.inkout.models.Post"/>
+        <mapping class="ir.doodmood.inkout.models.Comment"/>
     </session-factory>
 </hibernate-configuration>

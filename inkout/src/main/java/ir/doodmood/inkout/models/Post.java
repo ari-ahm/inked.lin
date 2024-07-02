@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "posts")
@@ -23,7 +23,9 @@ public class Post {
     private String body;
     private LocalDateTime createdAt;
     @ManyToMany(mappedBy = "liked")
-    private LinkedList<User> liked;
+    private ArrayList<User> liked;
+    @OneToMany
+    private ArrayList<Comment> comments;
 
     public Post(NewPostRequest npr, User u) {
         this.user = u;

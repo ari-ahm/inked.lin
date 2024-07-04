@@ -1,7 +1,6 @@
 package ir.doodmood.inkout.models.response;
 
 import ir.doodmood.inkout.models.Post;
-import ir.doodmood.inkout.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

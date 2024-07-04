@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,12 +19,12 @@ import java.util.ArrayList;
 public class NewCertificateRequest extends BasicRequest {
     private String title;
     private Long institute;
-    private LocalDate issuedDate;
+    private String issuedDate;
     @Optional
-    private LocalDate expiresDate;
+    private String expiresDate;
     private String validityCheck;
     private String website;
-    private ArrayList<Long> skills;
+    private Set<Long> skills;
 
     public boolean validate() {
         if (title.length() > 40 ||

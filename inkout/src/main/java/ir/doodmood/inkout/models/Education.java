@@ -10,6 +10,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "education_histories")
@@ -18,8 +20,8 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = {"id"})
 public class Education {
-    @Id
     @ManyToOne
     private User user;
     @Id
@@ -36,19 +38,19 @@ public class Education {
     private String grade;
     private String activities;
     @ManyToMany
-    private ArrayList<Skill> skills;
+    private Set<Skill> skills;
 
     public Education(NewEducationRequest ner, User user, ProxiesRepository pr) {
         this.user = user;
         this.institute = pr.getProxy(Institute.class, ner.getInstitute());
         this.major = ner.getMajor();
         this.currentlyStudying = ner.isCurrentlyStudying();
-        this.startDate = ner.getStartDate();
-        this.finishDate = ner.getFinishDate();
+        this.startDate = LocalDate.parse(ner.getStartDate());
+        this.finishDate = LocalDate.parse(ner.getFinishDate());
         this.description = ner.getDescription();
         this.grade = ner.getGrade();
         this.activities = ner.getActivities();
-        this.skills = new ArrayList<>();
+        this.skills = new HashSet<>();
         for (long i : ner.getSkills())
             this.skills.add(pr.getProxy(Skill.class, i));
     }

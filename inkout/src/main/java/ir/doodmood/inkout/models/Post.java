@@ -6,6 +6,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = {"id"})
 public class Post {
     @Id
     @GeneratedValue
@@ -23,9 +26,9 @@ public class Post {
     private String body;
     private LocalDateTime createdAt;
     @ManyToMany(mappedBy = "liked")
-    private ArrayList<User> liked;
+    private Set<User> liked_by;
     @OneToMany
-    private ArrayList<Comment> comments;
+    private List<Comment> comments;
 
     public Post(NewPostRequest npr, User u) {
         this.user = u;

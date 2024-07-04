@@ -29,13 +29,13 @@ public class UserResponse {
     private String bio;
     private UserGoal goal;
 
-    private ArrayList<JobPosition> jobPositions;
-    private ArrayList<Education> education;
-    private GeoLocation location;
-    private Passion passion;
-    private ContactInfo contact;
-    private ArrayList<Certificate> certificates;
-    private ArrayList<Skill> skills;
+//    private ArrayList<JobPosition> jobPositions;
+//    private ArrayList<Education> education;
+//    private GeoLocation location;
+//    private Passion passion;
+//    private ContactInfo contact;
+//    private ArrayList<Certificate> certificates;
+//    private ArrayList<Skill> skills;
 
 
     public UserResponse(User u) {
@@ -48,12 +48,12 @@ public class UserResponse {
         this.profile_image = u.getProfile_image();
         this.bio = u.getBio();
         this.goal = u.getGoal();
-        this.jobPositions = u.getJobPositions();
-        this.education = u.getEducation();
-        this.location = u.getLocation();
-        this.passion = u.getPassion();
-        this.contact = u.getContact();
-        this.certificates = u.getCertificates();
-        this.skills = u.getSkills();
+//        this.jobPositions = u.getJobPositions();
+//        this.education = u.getEducation();
+//        this.location = u.getLocation();
+//        this.passion = u.getPassion();
+//        this.contact = u.getContact();
+//        this.certificates = u.getCertificates();
+//        this.skills = u.getSkills();
     }
 }

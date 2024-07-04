@@ -10,6 +10,9 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "job_positions")
@@ -18,8 +21,8 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = {"id"})
 public class JobPosition {
-    @Id
     @ManyToOne
     private User user;
     @Id
@@ -37,7 +40,7 @@ public class JobPosition {
     private LocalDate finishDate;
     private String description;
     @ManyToMany
-    private ArrayList<Skill> skills;
+    private Set<Skill> skills;
 
     public JobPosition(NewUserJobPositionRequest nujpr, User user, ProxiesRepository pr) {
         this.user = user;
@@ -46,11 +49,11 @@ public class JobPosition {
         this.company = nujpr.getCompany();
         this.address = nujpr.getAddress();
         this.workFromType = nujpr.getWorkFromType();
-        this.startDate = nujpr.getStartDate();
-        this.finishDate = nujpr.getFinishDate();
+        this.startDate = LocalDate.parse(nujpr.getStartDate());
+        this.finishDate = LocalDate.parse(nujpr.getFinishDate());
         this.description = nujpr.getDescription();
         this.currentlyWorking = nujpr.isCurrentlyWorking();
-        this.skills = new ArrayList<>();
+        this.skills = new HashSet<>();
         for (long i : nujpr.getSkills())
             this.skills.add(pr.getProxy(Skill.class, i));
     }

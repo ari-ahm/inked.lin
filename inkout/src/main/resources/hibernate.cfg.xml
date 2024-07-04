@@ -13,8 +13,10 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
 
-<!--        <property name="hbm2ddl.auto">create-drop</property>-->
-        <property name="hbm2ddl.auto">update</property>
+        <property name="hbm2ddl.auto">create-drop</property>
+<!--        <property name="hbm2ddl.auto">update</property>-->
+
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
         <mapping class="ir.doodmood.inkout.models.GeoLocation"/>
         <mapping class="ir.doodmood.inkout.models.Certificate"/>

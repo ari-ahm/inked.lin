@@ -37,7 +37,7 @@ public class UserRegisterRequest extends BasicRequest {
             !first_name.matches("^[a-zA-Z\\s]*$") ||
             !last_name.matches("^[a-zA-Z\\s]*$") ||
             (!RegexPatterns.getEmailPattern().matcher(email).matches()) ||
-            (!password.contains("[a-z]") || !password.contains("[A-Z]") || !password.contains("[0-9]")) ||
+            (!password.matches(".*[a-z].*") || !password.matches(".*[A-Z].*") || !password.matches(".*[0-9].*")) ||
             (bg_image != null && !bg_image.matches("^[0-9a-zA-Z]{32}$")) ||
             (profile_image != null && !profile_image.matches("^[0-9a-zA-Z]{32}$")))
                 return false;

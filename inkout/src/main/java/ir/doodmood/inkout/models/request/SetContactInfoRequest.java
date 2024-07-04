@@ -19,7 +19,7 @@ public class SetContactInfoRequest extends BasicRequest {
     private String phone;
     private PhoneType phoneType;
     private String address;
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
     private ShowPolicy dobShowPolicy;
     private String instantContact;
 

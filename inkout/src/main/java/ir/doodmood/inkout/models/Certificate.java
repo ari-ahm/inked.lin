@@ -7,6 +7,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "certificates")
@@ -15,8 +17,8 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = {"id"})
 public class Certificate {
-    @Id
     @ManyToOne
     private User user;
     @Id
@@ -30,17 +32,17 @@ public class Certificate {
     private String validityCheck;
     private String website;
     @ManyToMany
-    private ArrayList<Skill> skills;
+    private Set<Skill> skills;
 
     public Certificate(NewCertificateRequest ncr, User u, ProxiesRepository pr) {
         this.user = u;
         this.title = ncr.getTitle();
         this.institute = pr.getProxy(Institute.class, ncr.getInstitute());
-        this.issuedDate = ncr.getIssuedDate();
-        this.expiresDate = ncr.getExpiresDate();
+        this.issuedDate = LocalDate.parse(ncr.getIssuedDate());
+        this.expiresDate = LocalDate.parse(ncr.getExpiresDate());
         this.validityCheck = ncr.getValidityCheck();
         this.website = ncr.getWebsite();
-        this.skills = new ArrayList<>();
+        this.skills = new HashSet<>();
         for (long i : ncr.getSkills())
             this.skills.add(pr.getProxy(Skill.class, i));
     }

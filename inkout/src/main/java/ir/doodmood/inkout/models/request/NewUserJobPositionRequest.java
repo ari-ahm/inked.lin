@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,11 +24,11 @@ public class NewUserJobPositionRequest extends BasicRequest {
     private String address;
     private WorkFromType workFromType;
     private boolean currentlyWorking;
-    private LocalDate startDate;
+    private String startDate;
     @Optional
-    private LocalDate finishDate;
+    private String finishDate;
     private String description;
-    private ArrayList<Long> skills;
+    private Set<Long> skills;
 
     public boolean validate() {
         if ((finishDate == null && !currentlyWorking) ||

@@ -8,12 +8,13 @@ import ir.doodmood.mashtframework.core.ComponentFactory;
 import ir.doodmood.mashtframework.core.Config;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -22,10 +23,11 @@ import java.util.Base64;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = {"id"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String passwordHash;
     private String email;
     private String first_name;
@@ -36,44 +38,39 @@ public class User {
     private String bio;
     private UserGoal goal;
 
-    @OneToMany
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private ArrayList<JobPosition> jobPositions;
-    @OneToMany
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private ArrayList<Education> education;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<JobPosition> jobPositions;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Education> education;
     @ManyToOne
     private GeoLocation location;
     @ManyToOne
     private Passion passion;
-    @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private ContactInfo contact;
-    @OneToMany
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private ArrayList<Certificate> certificates;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Certificate> certificates;
     @ManyToMany
-    private ArrayList<Skill> skills;
+    private Set<Skill> skills;
     @ManyToMany(mappedBy = "followers")
-    private ArrayList<User> following;
+    private Set<User> following;
     @ManyToMany
     @JoinTable(name = "followings")
-    private ArrayList<User> followers;
+    private Set<User> followers;
     @ManyToMany(mappedBy = "incomingConnectionRequests")
-    private ArrayList<User> outGoingConnectionRequests;
+    private Set<User> outGoingConnectionRequests;
     @ManyToMany
     @JoinTable(name = "connection_requests")
-    private ArrayList<User> incomingConnectionRequests;
+    private Set<User> incomingConnectionRequests;
     @ManyToMany
     @JoinTable(name = "connections")
-    private ArrayList<User> connections;
-    @OneToMany
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private ArrayList<Post> posts;
+    private Set<User> connections;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Post> posts;
     @ManyToMany
-    private ArrayList<Post> liked;
+    private Set<Post> liked;
     @OneToMany
-    private ArrayList<Comment> comments;
+    private List<Comment> comments;
 
 
     public User(UserRegisterRequest ur, ProxiesRepository pr) {
@@ -84,7 +81,7 @@ public class User {
         this.location = pr.getProxy(GeoLocation.class, ur.getLocation());
         if (ur.getPassion() != null)
             this.passion = pr.getProxy(Passion.class, ur.getPassion());
-        this.contact = pr.save(ContactInfo.builder().user(this).build());
+        this.contact = new ContactInfo();
         this.additional_name = ur.getAdditional_name();
         this.goal = ur.getGoal();
     }

@@ -15,6 +15,9 @@ import java.time.LocalDate;
 @Builder
 public class ContactInfo {
     @Id
+    @GeneratedValue
+    private Long id;
+
     @OneToOne
     private User user;
     private String phone;
@@ -28,7 +31,7 @@ public class ContactInfo {
         this.phone = setContactInfoRequest.getPhone();
         this.phoneType = setContactInfoRequest.getPhoneType();
         this.address = setContactInfoRequest.getAddress();
-        this.dateOfBirth = setContactInfoRequest.getDateOfBirth();
+        this.dateOfBirth = LocalDate.parse(setContactInfoRequest.getDateOfBirth());
         this.dobShowPolicy = setContactInfoRequest.getDobShowPolicy();
         this.instantContact = setContactInfoRequest.getInstantContact();
         this.user = u;

@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,13 +19,13 @@ public class NewEducationRequest extends BasicRequest {
     private Long institute;
     private String major;
     private boolean currentlyStudying;
-    private LocalDate startDate;
+    private String startDate;
     @Optional
-    private LocalDate finishDate;
+    private String finishDate;
     private String description;
     private String grade;
     private String activities;
-    private ArrayList<Long> skills;
+    private Set<Long> skills;
 
     public boolean validate() {
         if ((finishDate == null && !currentlyStudying) ||

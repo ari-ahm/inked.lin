@@ -11,9 +11,7 @@ import lombok.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,9 +37,9 @@ public class User {
     private UserGoal goal;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<JobPosition> jobPositions;
+    private Set<JobPosition> jobPositions;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Education> education;
+    private Set<Education> education;
     @ManyToOne
     private GeoLocation location;
     @ManyToOne
@@ -49,7 +47,7 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     private ContactInfo contact;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Certificate> certificates;
+    private Set<Certificate> certificates;
     @ManyToMany
     private Set<Skill> skills;
     @ManyToMany(mappedBy = "followers")
@@ -66,11 +64,11 @@ public class User {
     @JoinTable(name = "connections")
     private Set<User> connections;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Post> posts;
+    private Set<Post> posts;
     @ManyToMany
-    private Set<Post> liked;
+    private Set<Post> likedPosts;
     @OneToMany
-    private List<Comment> comments;
+    private Set<Comment> comments;
 
 
     public User(UserRegisterRequest ur, ProxiesRepository pr) {

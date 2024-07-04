@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,10 +23,10 @@ public class Post {
     private User user;
     private String body;
     private LocalDateTime createdAt;
-    @ManyToMany(mappedBy = "liked")
+    @ManyToMany(mappedBy = "likedPosts")
     private Set<User> liked_by;
     @OneToMany
-    private List<Comment> comments;
+    private Set<Comment> comments;
 
     public Post(NewPostRequest npr, User u) {
         this.user = u;

@@ -52,8 +52,8 @@ public class PostController {
             dto.sendResponse(commentService.getById(Long.parseLong(dto.getPathVariables().getLast())));
         } catch (NotFoundException e) {
             dto.sendResponse(404, "Not Found");
-        } catch (ParseException e) {
-
+        } catch (NumberFormatException e) {
+            dto.sendResponse(400, "Bad Request");
         }
     }
 

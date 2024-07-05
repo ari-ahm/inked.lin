@@ -45,7 +45,7 @@ public class UserResponse {
     private Set<Long> likedPosts;
 
 
-    public UserResponse(User u, Long requestingUserId) { // TODO implement dobShowPolicy
+    public UserResponse(User u) { // TODO implement dobShowPolicy
         this.id = u.getId();
         this.first_name = u.getFirst_name();
         this.last_name = u.getLast_name();
@@ -56,40 +56,52 @@ public class UserResponse {
         this.bio = u.getBio();
         this.goal = u.getGoal();
         this.jobPositions = new HashSet<>();
-        for (JobPosition p : u.getJobPositions())
-            this.jobPositions.add(new JobPositionResponse(p));
+        if (u.getJobPositions() != null)
+            for (JobPosition p : u.getJobPositions())
+                this.jobPositions.add(new JobPositionResponse(p));
         this.education = new HashSet<>();
-        for (Education p : u.getEducation())
-            this.education.add(new EducationResponse(p));
+        if (u.getEducation() != null)
+            for (Education p : u.getEducation())
+                this.education.add(new EducationResponse(p));
         this.location = new GeoLocationResponse(u.getLocation());
-        this.passion = new PassionResponse(u.getPassion());
+        if (passion != null)
+            this.passion = new PassionResponse(u.getPassion());
         this.contact = new ContactInfoResponse(u.getContact());
         this.certificates = new HashSet<>();
-        for (Certificate certificate : u.getCertificates())
-            this.certificates.add(new CertificateResponse(certificate));
+        if (u.getCertificates() != null)
+            for (Certificate certificate : u.getCertificates())
+                this.certificates.add(new CertificateResponse(certificate));
         this.skills = new HashSet<>();
-        for (Skill skill : u.getSkills())
-                this.skills.add(new SkillResponse(skill));
+        if (u.getSkills() != null)
+            for (Skill skill : u.getSkills())
+                    this.skills.add(new SkillResponse(skill));
         this.followers = new HashSet<>();
-        for (User v : u.getFollowers())
-            this.followers.add(v.getId());
+        if (u.getFollowers() != null)
+            for (User v : u.getFollowers())
+                this.followers.add(v.getId());
         this.following = new HashSet<>();
-        for (User v : u.getFollowing())
-            this.following.add(v.getId());
+        if (u.getFollowing() != null)
+            for (User v : u.getFollowing())
+                this.following.add(v.getId());
         this.outGoingConnectionRequests = new HashSet<>();
-        for (User v : u.getOutGoingConnectionRequests())
-            this.outGoingConnectionRequests.add(v.getId());
+        if (u.getOutGoingConnectionRequests() != null)
+            for (User v : u.getOutGoingConnectionRequests())
+                this.outGoingConnectionRequests.add(v.getId());
         this.incomingConnectionRequests = new HashSet<>();
-        for (User v : u.getIncomingConnectionRequests())
-            this.incomingConnectionRequests.add(v.getId());
+        if (u.getIncomingConnectionRequests() != null)
+            for (User v : u.getIncomingConnectionRequests())
+                this.incomingConnectionRequests.add(v.getId());
         this.connections = new HashSet<>();
-        for (User v : u.getConnections())
-            this.connections.add(v.getId());
+        if (u.getConnections() != null)
+            for (User v : u.getConnections())
+                this.connections.add(v.getId());
         this.posts = new HashSet<>();
-        for (Post i : u.getPosts())
-            this.posts.add(new PostResponse(i));
+        if (u.getPosts() != null)
+            for (Post i : u.getPosts())
+                this.posts.add(new PostResponse(i));
         this.likedPosts = new HashSet<>();
-        for (Post i : u.getLikedPosts())
-            this.likedPosts.add(i.getId());
+        if (u.getLikedPosts() != null)
+            for (Post i : u.getLikedPosts())
+                this.likedPosts.add(i.getId());
     }
 }

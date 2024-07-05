@@ -20,8 +20,7 @@ public class GeoLocationsController {
     @GetMapping
     private void get(MashtDTO dto) {
         if (geoLocationsResponse == null) {
-            geoLocationsResponse = new GeoLocationsResponse();
-            geoLocationsResponse.setLocations(geoLocationsService.getLocations());
+            geoLocationsResponse = new GeoLocationsResponse(geoLocationsService.getLocations());
         }
 
         dto.sendResponse(geoLocationsResponse);

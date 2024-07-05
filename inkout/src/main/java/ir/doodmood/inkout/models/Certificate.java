@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,7 +38,8 @@ public class Certificate {
         this.title = ncr.getTitle();
         this.institute = pr.getProxy(Institute.class, ncr.getInstitute());
         this.issuedDate = LocalDate.parse(ncr.getIssuedDate());
-        this.expiresDate = LocalDate.parse(ncr.getExpiresDate());
+        if (expiresDate != null)
+            this.expiresDate = LocalDate.parse(ncr.getExpiresDate());
         this.validityCheck = ncr.getValidityCheck();
         this.website = ncr.getWebsite();
         this.skills = new HashSet<>();

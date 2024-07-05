@@ -43,7 +43,7 @@ public class UsersService {
     public User addCertificate(NewCertificateRequest ncr, long id) {
         User u = userRepository.getUser(id);
         u.getCertificates().add(proxiesRepository.save(new Certificate(ncr, u, proxiesRepository)));
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
@@ -55,14 +55,14 @@ public class UsersService {
                 break;
             }
         }
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
     public User addEducation(NewEducationRequest ner, long id) {
         User u = userRepository.getUser(id);
         u.getEducation().add(proxiesRepository.save(new Education(ner, u, proxiesRepository)));
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
@@ -74,14 +74,14 @@ public class UsersService {
                 break;
             }
         }
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
     public User addJobPos(NewUserJobPositionRequest nujpr, long id) {
         User u = userRepository.getUser(id);
         u.getJobPositions().add(proxiesRepository.save(new JobPosition(nujpr, u, proxiesRepository)));
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
@@ -93,14 +93,14 @@ public class UsersService {
                 break;
             }
         }
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
     public User addSkill(AddSkill2UserRequest as2ur, long id) {
         User u = userRepository.getUser(id);
         u.getSkills().add(proxiesRepository.getProxy(Skill.class, as2ur.getSkill()));
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
@@ -112,21 +112,21 @@ public class UsersService {
                 break;
             }
         }
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
     public User setContactInfo(SetContactInfoRequest scir, long id) {
         User u = userRepository.getUser(id);
         u.setContact(proxiesRepository.save(new ContactInfo(scir, u)));
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
     public User update(UserRegisterRequest ur, long id) { // TODO handle email change
         User u = new User(ur, proxiesRepository);
         u.setId(id);
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
         return u;
     }
 
@@ -137,7 +137,7 @@ public class UsersService {
     public void post(NewPostRequest npr, long id) {
         User u = userRepository.getUser(id);
         u.getPosts().add(proxiesRepository.save(new Post(npr, u)));
-        userRepository.saveUser(u);
+        userRepository.updateUser(u);
     }
 
     public void comment(NewCommentRequest npr, long id) {

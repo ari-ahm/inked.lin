@@ -39,4 +39,21 @@ public class ProxiesRepository {
 
         return object;
     }
+
+    public <T> T update(T object) {
+        Transaction transaction = null;
+
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            session.update(object);
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (transaction != null)
+                transaction.rollback();
+            return null;
+        }
+
+        return object;
+    }
 }

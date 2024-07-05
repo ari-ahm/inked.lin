@@ -40,6 +40,24 @@ public class UserRepository {
         return user;
     }
 
+    public User updateUser(User user) {
+
+        Transaction transaction = null;
+
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            session.update(user);
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (transaction != null)
+                transaction.rollback();
+            return null;
+        }
+
+        return user;
+    }
+
     public User getUser(long id) {
         try (Session session = sessionFactory.openSession()) {
             return session.byId(User.class).load(id);

@@ -39,6 +39,28 @@ public class UsersController {
         dto.sendResponse(new UserResponse(u));
     }
 
+    @GetMapping
+    private void getMe(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        UserFindRequest request = new UserFindRequest();
+        request.setId(jwtAuth.getId());
+        User u;
+        try {
+            u = usersService.find(request);
+        } catch (NotFoundException e) {
+            dto.sendResponse(404, "Not Found");
+            return;
+        }
+        dto.sendResponse(new UserResponse(u));
+    }
+
     @PostMapping("/login")
     private void login(MashtDTO dto) {
         UserLoginRequest request = (UserLoginRequest) dto.getRequestBody(UserLoginRequest.class);

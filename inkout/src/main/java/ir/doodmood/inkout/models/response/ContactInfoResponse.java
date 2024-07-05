@@ -14,7 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ContactInfoResponse {
     private long id;
-    private long user;
     private String phone;
     private PhoneType phoneType;
     private String address;
@@ -24,7 +23,6 @@ public class ContactInfoResponse {
 
     public ContactInfoResponse(ContactInfo contact) {
         this.id = contact.getId();
-        this.user = contact.getUser().getId();
         this.phone = contact.getPhone();
         this.phoneType = contact.getPhoneType();
         this.address = contact.getAddress();

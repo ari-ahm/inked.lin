@@ -23,11 +23,17 @@ public class ContactInfoResponse {
 
     public ContactInfoResponse(ContactInfo contact) {
         this.id = contact.getId();
-        this.phone = contact.getPhone();
-        this.phoneType = contact.getPhoneType();
-        this.address = contact.getAddress();
-        this.dateOfBirth = contact.getDateOfBirth().toString();
-        this.dobShowPolicy = contact.getDobShowPolicy();
-        this.instantContact = contact.getInstantContact();
+        if (contact.getPhone() != null)
+            this.phone = contact.getPhone();
+        if (phoneType != null)
+            this.phoneType = contact.getPhoneType();
+        if (address != null)
+            this.address = contact.getAddress();
+        if (dobShowPolicy != null)
+            this.dateOfBirth = contact.getDateOfBirth().toString();
+        if (dobShowPolicy != null)
+            this.dobShowPolicy = contact.getDobShowPolicy();
+        if (instantContact != null)
+            this.instantContact = contact.getInstantContact();
     }
 }

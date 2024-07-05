@@ -42,7 +42,8 @@ public class EducationResponse {
         this.major = education.getMajor();
         this.currentlyStudying = education.isCurrentlyStudying();
         this.startDate = education.getStartDate().toString();
-        this.finishDate = education.getFinishDate().toString();
+        if (education.getFinishDate() != null)
+            this.finishDate = education.getFinishDate().toString();
         this.description = education.getDescription();
         this.grade = education.getGrade();
         this.activities = education.getActivities();

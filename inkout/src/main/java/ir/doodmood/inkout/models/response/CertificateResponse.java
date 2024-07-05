@@ -30,7 +30,8 @@ public class CertificateResponse {
         this.title = certificate.getTitle();
         this.institute = certificate.getInstitute().getId();
         this.issuedDate = certificate.getIssuedDate().toString();
-        this.expiresDate = certificate.getExpiresDate().toString();
+        if (certificate.getExpiresDate() != null)
+            this.expiresDate = certificate.getExpiresDate().toString();
         this.validityCheck = certificate.getValidityCheck();
         this.website = certificate.getWebsite();
         this.skills = new HashSet<>();

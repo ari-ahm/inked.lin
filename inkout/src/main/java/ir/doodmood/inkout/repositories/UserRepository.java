@@ -1,5 +1,6 @@
 package ir.doodmood.inkout.repositories;
 
+import ir.doodmood.inkout.models.Post;
 import ir.doodmood.inkout.models.User;
 import ir.doodmood.inkout.models.request.UserRegisterRequest;
 import ir.doodmood.mashtframework.annotation.Autowired;
@@ -90,11 +91,31 @@ public class UserRepository {
 
     public List<User> search(String text, long id) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery("FROM User u WHERE " +
-                    "u.firstName LIKE :searchText OR " +
-                    "u.lastName LIKE :searchText OR " +
-                    "u.additionalName LIKE :searchText OR " +
+            return (List<User>) session.createQuery("FROM User u WHERE " +
+                    "u.first_name LIKE :searchText OR " +
+                    "u.last_name LIKE :searchText OR " +
+                    "u.additional_name LIKE :searchText OR " +
                     "u.email LIKE :searchText").setParameter("searchText", text).getResultList();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public Post getPost(long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.byId(Post.class).load(id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<Post> getFeed(long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return (List<Post>) session.createQuery("select distinct p from User u " +
+                    "join u.connections c " +
+                    "join c.posts p " +
+                    "where u = :user" +
+                    "ORDER BY p.createdAt DESC").setParameter("user", id).setMaxResults(30).getResultList();
         } catch (NoResultException e) {
             return null;
         }

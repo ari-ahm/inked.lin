@@ -5,6 +5,7 @@ import ir.doodmood.inkout.Exception.NotFoundException;
 import ir.doodmood.inkout.Exception.WrongPassException;
 import ir.doodmood.inkout.models.*;
 import ir.doodmood.inkout.models.request.*;
+import ir.doodmood.inkout.models.response.PostResponse;
 import ir.doodmood.inkout.models.response.UserResponse;
 import ir.doodmood.inkout.repositories.ProxiesRepository;
 import ir.doodmood.inkout.repositories.UserRepository;
@@ -152,6 +153,18 @@ public class UsersService {
         LinkedList<UserResponse> ret = new LinkedList<>();
         for (User i : userRepository.search(scir.getSearchText(), id)) {
             ret.add(new UserResponse(i));
+        }
+        return ret;
+    }
+
+    public PostResponse getPost(long id) {
+        return new PostResponse(userRepository.getPost(id));
+    }
+
+    public List<PostResponse> getFeed(long id) {
+        LinkedList<PostResponse> ret = new LinkedList<>();
+        for (Post i : userRepository.getFeed(id)) {
+            ret.add(new PostResponse(i));
         }
         return ret;
     }

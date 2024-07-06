@@ -77,8 +77,21 @@ public class PostController {
         dto.sendResponse(200, "OK");
     }
 
-    @GetMapping
+    @GetMapping("/{}")
     private void get(MashtDTO dto) {
-        // TODO.
+        dto.sendResponse(usersService.getPost(Long.parseLong(dto.getPathVariables().getLast())));
+    }
+
+    @GetMapping
+    private void feed(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
+        dto.sendResponse(usersService.getFeed(jwtAuth.getId()));
     }
 }

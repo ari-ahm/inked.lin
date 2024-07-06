@@ -5,10 +5,14 @@ import ir.doodmood.inkout.Exception.NotFoundException;
 import ir.doodmood.inkout.Exception.WrongPassException;
 import ir.doodmood.inkout.models.*;
 import ir.doodmood.inkout.models.request.*;
+import ir.doodmood.inkout.models.response.UserResponse;
 import ir.doodmood.inkout.repositories.ProxiesRepository;
 import ir.doodmood.inkout.repositories.UserRepository;
 import ir.doodmood.mashtframework.annotation.Autowired;
 import ir.doodmood.mashtframework.annotation.Service;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class UsersService {
@@ -142,5 +146,13 @@ public class UsersService {
 
     public void comment(NewCommentRequest npr, long id) {
         proxiesRepository.save(new Comment(npr, proxiesRepository.getProxy(User.class, id), proxiesRepository));
+    }
+
+    public List<UserResponse> search(UserSearchRequest scir, long id) {
+        LinkedList<UserResponse> ret = new LinkedList<>();
+        for (User i : userRepository.search(scir.getSearchText(), id)) {
+            ret.add(new UserResponse(i));
+        }
+        return ret;
     }
 }

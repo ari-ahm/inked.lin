@@ -303,12 +303,22 @@ public class UsersController {
     }
 
 
-    @GetMapping("/search") // TODO
+    @GetMapping("/search")
     private void search(MashtDTO dto) {
+        JwtAuth jwtAuth;
+        try {
+            jwtAuth = (JwtAuth) dto.readJWTToken(JwtAuth.class);
+        } catch (Exception e) {
+            dto.sendResponse(401, "Unauthorized");
+            return;
+        }
+
         UserSearchRequest scir = (UserSearchRequest) dto.getRequestBody(UserSearchRequest.class);
         if (scir == null || !scir.validate()) {
             dto.sendResponse(400, "Bad Request");
             return;
         }
+
+        dto.sendResponse(usersService.search(scir, jwtAuth.getId()));
     }
 }

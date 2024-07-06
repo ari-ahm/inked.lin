@@ -13,6 +13,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.util.List;
+
 @Repository
 public class UserRepository {
     private final SessionFactory sessionFactory;
@@ -83,6 +85,18 @@ public class UserRepository {
         } catch (Exception e) {
             if (transaction != null)
                 transaction.rollback();
+        }
+    }
+
+    public List<User> search(String text, long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM User u WHERE " +
+                    "u.firstName LIKE :searchText OR " +
+                    "u.lastName LIKE :searchText OR " +
+                    "u.additionalName LIKE :searchText OR " +
+                    "u.email LIKE :searchText").setParameter("searchText", text).getResultList();
+        } catch (NoResultException e) {
+            return null;
         }
     }
 }

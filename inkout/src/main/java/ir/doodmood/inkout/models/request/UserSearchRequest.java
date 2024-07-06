@@ -12,9 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @AllRequired
 public class UserSearchRequest extends BasicRequest {
-    private String first_name;
-    private String last_name;
-    private String additional_name;
+    private String searchText;
 
     public boolean validate() {
         return true;
